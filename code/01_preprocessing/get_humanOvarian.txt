@@ -1,0 +1,26 @@
+# code adaprted from
+# https://github.com/kinnaryshah/MeanVarBias/blob/main/R/01_preprocessing/preprocessing_humanOvarian.sh
+
+cd ..
+cd ..
+cd raw-data
+
+mkdir humanOvarian
+cd humanOvarian
+
+mkdir outs
+cd outs
+
+curl -o spatial.zip "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6506nnn/GSM6506111/suppl/GSM6506111_SP2_spatial.zip"
+unzip spatial.zip
+
+mkdir filtered_feature_bc_matrix
+cd filtered_feature_bc_matrix
+
+curl -o barcodes.tsv.gz "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6506nnn/GSM6506111/suppl/GSM6506111_SP2_barcodes.tsv.gz"
+curl -o features.tsv.gz "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6506nnn/GSM6506111/suppl/GSM6506111_SP2_features.tsv.gz"
+curl -o matrix.mtx.gz "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6506nnn/GSM6506111/suppl/GSM6506111_SP2_matrix.mtx.gz"
+
+# clean up
+cd ..
+rm spatial.zip
