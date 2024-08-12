@@ -8,7 +8,7 @@ cd raw-data
 mkdir humanOvarian
 cd humanOvarian
 
-mkdir outs
+mkdir outs/
 cd outs
 
 curl -o spatial.zip "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6506nnn/GSM6506111/suppl/GSM6506111_SP2_spatial.zip"

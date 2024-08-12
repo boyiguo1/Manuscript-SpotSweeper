@@ -68,7 +68,7 @@ dev.off()
 
 spe$sum_discard <- isOutlier(spe$sum, nmads=3, type="lower", log=TRUE)
 spe$detected_discard <- isOutlier(spe$detected, nmads=3, type="lower", log=TRUE)
-spe$subsets_mito_sum_discard <- isOutlier(spe$subsets_mito_percent, nmads=3, type="higher")
+spe$subsets_mito_percent_discard <- isOutlier(spe$subsets_mito_percent, nmads=3, type="higher")
 
 
 png(here(plot_dir, "cancer_violins_discarded_3mad.png"), width=9, height=3, res=300, units="in")
@@ -80,7 +80,7 @@ p2 <- plotColData(spe, x="sample_id", y="detected", color="detected_discard") +
   scale_y_log10() +
   ggtitle("Gene Detected")
 
-p3 <- plotColData(spe, x="sample_id", y="subsets_mito_percent", color="subsets_mito_sum_discard") +
+p3 <- plotColData(spe, x="sample_id", y="subsets_mito_percent", color="subsets_mito_percent_discard") +
   ggtitle("Mito Percent")
 
 p1+p2+p3
@@ -94,7 +94,7 @@ p1 <- plotQC(spe, metric="sum", outliers="sum_discard") +
 p2 <- plotQC(spe, metric="detected", outliers="detected_discard") +
   ggtitle("Genes Detected")
 
-p3 <- plotQC(spe, metric="subsets_mito_percent", outliers="subsets_mito_sum_discard") +
+p3 <- plotQC(spe, metric="subsets_mito_percent", outliers="subsets_mito_percent_discard") +
   ggtitle("Mito Percent")
 
 p1+p2+p3
@@ -105,7 +105,7 @@ dev.off()
 
 spe$sum_discard_threshold <- spe$sum < 2000
 spe$detected_discard_threshold  <- spe$detected < 1000
-spe$subsets_mito_sum_discard_threshold  <- spe$subsets_mito_percent > 10
+spe$subsets_mito_percent_discard_threshold  <- spe$subsets_mito_percent > 10
 
 png(here(plot_dir, "cancer_spotplot_discarded_threshold.png"), width=12, height=5, res=300, units="in")
 p1 <- plotQC(spe, metric="sum", outliers="sum_discard_threshold") +
@@ -114,7 +114,7 @@ p1 <- plotQC(spe, metric="sum", outliers="sum_discard_threshold") +
 p2 <- plotQC(spe, metric="detected", outliers="detected_discard_threshold") +
   ggtitle("Genes Detected")
 
-p3 <- plotQC(spe, metric="subsets_mito_percent", outliers="subsets_mito_sum_discard_threshold") +
+p3 <- plotQC(spe, metric="subsets_mito_percent", outliers="subsets_mito_percent_discard_threshold") +
   ggtitle("Mito Percent")
 
 p1+p2+p3
@@ -155,6 +155,51 @@ p3 <- plotQC(spe, metric="subsets_mito_percent", outliers="subsets_mito_percent_
   ggtitle("Mito Percent")
 
 p1+p2+p3
+dev.off()
+
+
+
+# ======== Venn Diagram ==========
+
+# counts
+discard_list <- list(
+  Threshold = which(spe$sum_discard_threshold),
+  ThreeMAD = which(spe$sum_discard),
+  SpotSweeper = which(spe$sum_outliers)
+)
+
+png(here(plot_dir, "ovariancancer_vennDiagram_counts_discard.png"), width=5, height=5, units="in", res=300)
+ggVennDiagram(discard_list) +
+  scale_fill_gradient(low="white",high = "red") +
+  ggtitle("Sum Counts")
+dev.off()
+
+
+# genes
+discard_list <- list(
+  Threshold = which(spe$detected_discard_threshold),
+  ThreeMAD = which(spe$detected_discard),
+  SpotSweeper = which(spe$detected_outliers)
+)
+
+png(here(plot_dir, "ovariancancer_vennDiagram_detected_discard.png"), width=5, height=5, units="in", res=300)
+ggVennDiagram(discard_list) +
+  scale_fill_gradient(low="white",high = "red") +
+  ggtitle("Detected Genes")
+dev.off()
+
+
+# mito ratio
+discard_list <- list(
+  Threshold = which(spe$subsets_mito_percent_discard_threshold),
+  ThreeMAD = which(spe$subsets_mito_percent_discard),
+  SpotSweeper = which(spe$subsets_mito_percent_outliers)
+)
+
+png(here(plot_dir, "ovariancancer_vennDiagram_mito_discard.png"), width=5, height=5, units="in", res=300)
+ggVennDiagram(discard_list) +
+  scale_fill_gradient(low="white",high = "red") +
+  ggtitle("Mito Ratio")
 dev.off()
 
 

@@ -39,6 +39,7 @@ Temporary Items
 *.RDataTmp
 *.rda
 *.rds
+*.xlsx
 
 # User-specific files
 .Ruserdata
