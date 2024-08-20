@@ -1,4 +1,9 @@
 #!/bin/bash
+#SBATCH --job-name=get_humanOvarian
+#SBATCH --output=./logs/get_humanOvarian.out
+#SBATCH --error=./logs/get_humanOvarian.err
+#SBATCH --mem-per-cpu=5G --cpus-per-task=1
+#SBATCH --array=1
 
 # List of sample IDs
 samples=("GSM6506110" "GSM6506111" "GSM6506112" "GSM6506113" "GSM6506114" "GSM6506115" "GSM6506116" "GSM6506117")

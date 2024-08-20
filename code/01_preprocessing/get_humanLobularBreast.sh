@@ -1,3 +1,11 @@
+#!/bin/bash
+#SBATCH --job-name=get_humanOvarian
+#SBATCH --output=./logs/get_humanLobularBreast.out
+#SBATCH --error=./logs/get_humanLobularBreast.err
+#SBATCH --mem-per-cpu=5G --cpus-per-task=1
+#SBATCH --array=1
+
+
 # make directory for the data first time
 # mkdir outputs/raw
 cd ..
