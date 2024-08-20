@@ -5,7 +5,7 @@
 #SBATCH --job-name=get_VisiumHD
 #SBATCH --output=./logs/get_VisiumHD.out
 #SBATCH --error=./logs/get_VisiumHD.err
-#SBATCH --array=1
+#SBATCH --open-mode=append
 
 
 # originally copied from /dcs05/lieber/lcolladotor/Visium_HD_DLPFC_pilot_LIBD4100/Visium_HD_DLPFC_pilot/
@@ -27,32 +27,30 @@ echo "Node name: ${SLURMD_NODENAME}"
 #   Sample 1: Visium_HD_Mouse_Brain
 ################################################################################
 
-# mkdir -p $dest_dir/Visium_HD_Mouse_Brain/input
-# mkdir $dest_dir/Visium_HD_Mouse_Brain/output
+mkdir -p $dest_dir/Visium_HD_Mouse_Brain/input
+mkdir $dest_dir/Visium_HD_Mouse_Brain/output
 
 #   All input files except FASTQs
-# cd $dest_dir/Visium_HD_Mouse_Brain/input
-# curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_image.tif
-# curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_tissue_image.tif
-# curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_alignment_file.json
-# curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_probe_set.csv
+cd $dest_dir/Visium_HD_Mouse_Brain/input
+curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_image.tif
+curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_tissue_image.tif
+curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_alignment_file.json
+curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_probe_set.csv
 
-# #   All output files
-# cd $dest_dir/Visium_HD_Mouse_Brain/output
-# curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_web_summary.html
-# curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_cloupe_008um.cloupe
-# curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_feature_slice.h5
-# curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_metrics_summary.csv
-# curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_molecule_info.h5
-# curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_spatial.tar.gz
-# curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_square_002um_outputs.tar.gz
-# curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_square_008um_outputs.tar.gz
-# curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_square_016um_outputs.tar.gz
+#   All output files
+cd $dest_dir/Visium_HD_Mouse_Brain/output
+curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_web_summary.html
+curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_cloupe_008um.cloupe
+curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_feature_slice.h5
+curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_metrics_summary.csv
+curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_molecule_info.h5
+curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_spatial.tar.gz
+curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Brain/Visium_HD_Mouse_Brain_binned_outputs.tar.gz
 
-# #   Now extract and unzip any tar.gz files
-# for tar_file in $(ls *.tar.gz); do
-#     tar -xzf $tar_file
-# done
+#   Now extract and unzip any tar.gz files
+for tar_file in $(ls *.tar.gz); do
+    tar -xzf $tar_file
+done
 
 # ################################################################################
 # #   Sample 2: Visium_HD_Human_Lung_Cancer
@@ -75,14 +73,12 @@ curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Human_Lun
 curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Human_Lung_Cancer/Visium_HD_Human_Lung_Cancer_metrics_summary.csv
 curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Human_Lung_Cancer/Visium_HD_Human_Lung_Cancer_molecule_info.h5
 curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Human_Lung_Cancer/Visium_HD_Human_Lung_Cancer_spatial.tar.gz
-curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Human_Lung_Cancer/Visium_HD_Human_Lung_Cancer_square_002um_outputs.tar.gz
-curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Human_Lung_Cancer/Visium_HD_Human_Lung_Cancer_square_008um_outputs.tar.gz
-curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Human_Lung_Cancer/Visium_HD_Human_Lung_Cancer_square_016um_outputs.tar.gz
+curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Human_Lung_Cancer/Visium_HD_Human_Lung_Cancer_binned_outputs.tar.gz
 
-# #   Now extract and unzip any tar.gz files
-# for tar_file in $(ls *.tar.gz); do
-#     tar -xzf $tar_file
-# done
+#   Now extract and unzip any tar.gz files
+for tar_file in $(ls *.tar.gz); do
+    tar -xzf $tar_file
+done
 
 # ################################################################################
 # #   Sample 3: Visium_HD_Mouse_Small_Intestine
