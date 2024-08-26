@@ -7,13 +7,7 @@ library(SpatialFeatureExperiment)
 library(SpatialExperiment)
 library(Voyager)
 
-# define directories
-raw_dir <- here("raw-data", "VisiumHD", "Visium_HD_mouse_brain")
-processed_dir <- here("processed-data", "VisiumHD")
-plot_dir <- here("plots","VisiumHD", "mouse_brain")
-
-
-hd_dir <-  here("raw-data", "VisiumHD", "Visium_HD_Mouse_Brain", "output", "binned_outputs")
+hd_dir <-  here("raw-data", "VisiumHD", "Visium_HD_Human_Lung_Cancer", "output", "binned_outputs")
 
 # load VisiumHD dat
 sfe.008 <- read10xVisiumSFE(samples=list.files(hd_dir),
@@ -47,8 +41,8 @@ sfe.002 <- read10xVisiumSFE(samples=list.files(hd_dir),
 # ======== Convert to SpatialExperiment ========
 
 spe <- function(sfe){
-  sfe$xcoord <- sfe$array_col
-  sfe$ycoord <- sfe$array_row
+  sfe$xcoord <- spatialCoords(sfe)[,1]
+  sfe$ycoord <- spatialCoords(sfe)[,2]
   
   spe <- SpatialExperiment(assay=counts(sfe),
                            colData=colData(sfe),
@@ -81,6 +75,6 @@ spe.002
 # imgData names(0):
 
 # save
-saveRDS(spe.008, file=here("processed-data", "VisiumHD", "VisiumHD_MouseBrain_008.rds"))
-saveRDS(spe.016, file=here("processed-data", "VisiumHD", "VisiumHD_MouseBrain_016.rds"))
-saveRDS(spe.002, file=here("processed-data", "VisiumHD", "VisiumHD_MouseBrain_002.rds"))
+saveRDS(spe.008, file=here("processed-data", "VisiumHD", "VisiumHD_HumanLung_008.rds"))
+saveRDS(spe.016, file=here("processed-data", "VisiumHD", "VisiumHD_HumanLung_016.rds"))
+saveRDS(spe.002, file=here("processed-data", "VisiumHD", "VisiumHD_HumanLung_002.rds"))
