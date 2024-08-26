@@ -40,6 +40,7 @@ Temporary Items
 *.rda
 *.rds
 *.xlsx
+*.h5ad
 
 # User-specific files
 .Ruserdata
