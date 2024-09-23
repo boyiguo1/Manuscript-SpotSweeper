@@ -12,7 +12,7 @@ samples=("GSM6506110" "GSM6506111" "GSM6506112" "GSM6506113" "GSM6506114" "GSM65
 cd ..
 cd ..
 base_dir=$(pwd)
-data_dir="${base_dir}/raw-data/humanOvarian/outs"
+data_dir="${base_dir}/raw-data/humanOvarian"
 
 # Create base directories if they don't exist
 mkdir -p "${data_dir}"
@@ -23,7 +23,7 @@ for i in "${!samples[@]}"; do
     sample="${samples[$i]}"
     sp_num=$((i + 1))  # SP number (SP1, SP2, ..., SP8)
     sp_label="SP${sp_num}"
-    sample_dir="${data_dir}/${sample}"
+    sample_dir="${data_dir}/${sample}/outs"
     mkdir -p "${sample_dir}/filtered_feature_bc_matrix"
 
     # Download spatial data

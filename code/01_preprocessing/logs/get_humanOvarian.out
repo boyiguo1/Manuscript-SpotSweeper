@@ -1,8 +1,83 @@
-Archive:  /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/outs/GSM6506110/spatial.zip
-Archive:  /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/outs/GSM6506111/spatial.zip
-Archive:  /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/outs/GSM6506112/spatial.zip
-Archive:  /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/outs/GSM6506113/spatial.zip
-Archive:  /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/outs/GSM6506114/spatial.zip
-Archive:  /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/outs/GSM6506115/spatial.zip
-Archive:  /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/outs/GSM6506116/spatial.zip
-Archive:  /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/outs/GSM6506117/spatial.zip
+Archive:  /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506110/outs/spatial.zip
+   creating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506110/outs/spatial/
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506110/outs/spatial/tissue_hires_image.png  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506110/outs/__MACOSX/spatial/._tissue_hires_image.png  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506110/outs/spatial/detected_tissue_image.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506110/outs/__MACOSX/spatial/._detected_tissue_image.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506110/outs/spatial/tissue_positions_list.csv  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506110/outs/__MACOSX/spatial/._tissue_positions_list.csv  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506110/outs/spatial/aligned_fiducials.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506110/outs/__MACOSX/spatial/._aligned_fiducials.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506110/outs/spatial/scalefactors_json.json  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506110/outs/spatial/tissue_lowres_image.png  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506110/outs/__MACOSX/spatial/._tissue_lowres_image.png  
+Archive:  /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506111/outs/spatial.zip
+   creating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506111/outs/spatial/
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506111/outs/spatial/tissue_hires_image.png  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506111/outs/spatial/detected_tissue_image.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506111/outs/spatial/tissue_positions_list.csv  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506111/outs/spatial/aligned_fiducials.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506111/outs/spatial/scalefactors_json.json  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506111/outs/spatial/tissue_lowres_image.png  
+Archive:  /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506112/outs/spatial.zip
+   creating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506112/outs/spatial/
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506112/outs/spatial/tissue_hires_image.png  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506112/outs/__MACOSX/spatial/._tissue_hires_image.png  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506112/outs/spatial/detected_tissue_image.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506112/outs/spatial/tissue_positions_list.csv  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506112/outs/spatial/aligned_fiducials.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506112/outs/spatial/scalefactors_json.json  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506112/outs/spatial/tissue_lowres_image.png  
+Archive:  /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506113/outs/spatial.zip
+   creating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506113/outs/spatial/
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506113/outs/spatial/tissue_hires_image.png  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506113/outs/__MACOSX/spatial/._tissue_hires_image.png  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506113/outs/spatial/detected_tissue_image.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506113/outs/__MACOSX/spatial/._detected_tissue_image.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506113/outs/spatial/tissue_positions_list.csv  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506113/outs/spatial/aligned_fiducials.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506113/outs/spatial/scalefactors_json.json  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506113/outs/spatial/tissue_lowres_image.png  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506113/outs/__MACOSX/spatial/._tissue_lowres_image.png  
+Archive:  /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506114/outs/spatial.zip
+   creating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506114/outs/spatial/
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506114/outs/spatial/tissue_hires_image.png  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506114/outs/__MACOSX/spatial/._tissue_hires_image.png  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506114/outs/spatial/detected_tissue_image.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506114/outs/__MACOSX/spatial/._detected_tissue_image.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506114/outs/spatial/tissue_positions_list.csv  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506114/outs/spatial/aligned_fiducials.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506114/outs/__MACOSX/spatial/._aligned_fiducials.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506114/outs/spatial/scalefactors_json.json  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506114/outs/spatial/tissue_lowres_image.png  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506114/outs/__MACOSX/spatial/._tissue_lowres_image.png  
+Archive:  /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506115/outs/spatial.zip
+   creating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506115/outs/spatial/
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506115/outs/spatial/tissue_hires_image.png  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506115/outs/spatial/detected_tissue_image.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506115/outs/__MACOSX/spatial/._detected_tissue_image.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506115/outs/spatial/tissue_positions_list.csv  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506115/outs/spatial/aligned_fiducials.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506115/outs/spatial/scalefactors_json.json  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506115/outs/spatial/tissue_lowres_image.png  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506115/outs/__MACOSX/spatial/._tissue_lowres_image.png  
+Archive:  /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506116/outs/spatial.zip
+   creating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506116/outs/spatial/
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506116/outs/spatial/tissue_hires_image.png  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506116/outs/spatial/detected_tissue_image.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506116/outs/spatial/tissue_positions_list.csv  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506116/outs/spatial/aligned_fiducials.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506116/outs/spatial/scalefactors_json.json  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506116/outs/spatial/tissue_lowres_image.png  
+Archive:  /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506117/outs/spatial.zip
+   creating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506117/outs/spatial/
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506117/outs/spatial/tissue_hires_image.png  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506117/outs/__MACOSX/spatial/._tissue_hires_image.png  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506117/outs/spatial/detected_tissue_image.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506117/outs/__MACOSX/spatial/._detected_tissue_image.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506117/outs/spatial/tissue_positions_list.csv  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506117/outs/spatial/aligned_fiducials.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506117/outs/__MACOSX/spatial/._aligned_fiducials.jpg  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506117/outs/spatial/scalefactors_json.json  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506117/outs/__MACOSX/spatial/._scalefactors_json.json  
+  inflating: /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper/raw-data/humanOvarian/GSM6506117/outs/spatial/tissue_lowres_image.png  
