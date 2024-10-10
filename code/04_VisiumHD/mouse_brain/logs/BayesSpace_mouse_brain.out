@@ -1,0 +1,15 @@
+class: SpatialExperiment 
+dim: 19059 98917 
+metadata(0):
+assays(2): '' counts
+rownames(19059): ENSMUSG00000051951 ENSMUSG00000025900 ...
+  ENSMUSG00000064370 ENSMUSG00000051412
+rowData names(1): symbol
+colnames(98917): s_016um_00052_00082-1 s_016um_00150_00268-1 ...
+  s_016um_00144_00329-1 s_016um_00176_00108-1
+colData names(5): barcode in_tissue array_row array_col sample_id
+reducedDimNames(0):
+mainExpName: NULL
+altExpNames(0):
+spatialCoords names(2) : xcoord ycoord
+imgData names(0):
