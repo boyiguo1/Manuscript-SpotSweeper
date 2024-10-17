@@ -1,0 +1,14 @@
+class: SpatialExperiment 
+dim: 17729 25551 
+metadata(1): BANKSY_params
+assays(3): '' counts H0
+rownames(17729): 0610005C13Rik 0610007P14Rik ... mmu-mir-703 n-R5-8s1
+rowData names(0):
+colnames(25551): TACTAAAGAATTA TCTCTTAGTTGGC ... TTCTTATCGCCGC
+  TTGTCGTATAGCG
+colData names(2): sample_id clust_M0_lam0.3_k50_res0.7
+reducedDimNames(1): PCA_M0_lam0.3
+mainExpName: NULL
+altExpNames(0):
+spatialCoords names(2) : xcoord ycoord
+imgData names(1): sample_id
