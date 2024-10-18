@@ -1,0 +1,18 @@
+class: SpatialExperiment 
+dim: 28798 113350 
+metadata(0):
+assays(1): ''
+rownames(28798): 1700037H04Rik 1700084F23Rik ... Olfr730 Igkv4-83
+rowData names(0):
+colnames(113350): 100_100 100_101 ... 99_98 99_99
+colData names(535): n_genes_by_counts log1p_n_genes_by_counts ...
+  detected_threshold sum_threshold
+reducedDimNames(0):
+mainExpName: NULL
+altExpNames(0):
+spatialCoords names(0) :
+imgData names(1): sample_id
+null device 
+          1 
+null device 
+          1 
