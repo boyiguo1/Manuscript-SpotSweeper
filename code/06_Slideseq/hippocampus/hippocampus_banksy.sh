@@ -3,7 +3,7 @@
 #SBATCH --output=HPC_Banksy.out  # Output file
 #SBATCH --error=HPC_Banksy.err   # Error file
 #SBATCH --ntasks=1                                # Run on a single CPU
-#SBATCH --mem=64G                                
+#SBATCH --mem=90G                                
 
 
 # Load R module (if necessary, adjust this to match your system)

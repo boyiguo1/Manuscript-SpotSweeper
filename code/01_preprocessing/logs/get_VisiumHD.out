@@ -30,3 +30,35 @@ Job name: get_VisiumHD
 Node name: transfer-01
 **** Job ends ****
 Tue Aug 20 04:49:51 PM EDT 2024
+**** Job starts ****
+Mon Sep 23 03:37:34 PM EDT 2024
+**** JHPCE info ****
+User: mtotty
+Job id: 9818600
+Job name: get_VisiumHD
+Node name: transfer-01
+**** Job starts ****
+Mon Sep 23 03:38:39 PM EDT 2024
+**** JHPCE info ****
+User: mtotty
+Job id: 9818624
+Job name: get_VisiumHD
+Node name: transfer-01
+**** Job ends ****
+Mon Sep 23 03:40:42 PM EDT 2024
+**** Job starts ****
+Mon Sep 23 03:44:42 PM EDT 2024
+**** JHPCE info ****
+User: mtotty
+Job id: 9818691
+Job name: get_VisiumHD
+Node name: transfer-01
+**** Job starts ****
+Mon Sep 23 03:45:53 PM EDT 2024
+**** JHPCE info ****
+User: mtotty
+Job id: 9818700
+Job name: get_VisiumHD
+Node name: transfer-01
+**** Job ends ****
+Mon Sep 23 04:14:32 PM EDT 2024

@@ -14,7 +14,7 @@ library(dplyr)
 plot_dir <- here("plots","Slideseq")
 
 
-load(here("processed-data", "Slideseq","SlideseqV2Hippocampus", "slideseq_hippocampus.RData"))
+load(here("processed-data", "Slideseq","SlideseqV2Hippocampus", "slideseq_hippocampus.Rdata"))
 # "countmat" "location"
 
 

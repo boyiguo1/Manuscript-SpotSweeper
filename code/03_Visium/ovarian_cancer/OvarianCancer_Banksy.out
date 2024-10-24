@@ -1,0 +1,15 @@
+class: SpatialExperiment 
+dim: 33538 20123 
+metadata(0):
+assays(2): counts logcounts
+rownames(33538): ENSG00000243485 ENSG00000237613 ... ENSG00000277475
+  ENSG00000268674
+rowData names(2): gene_id gene_name
+colnames(20123): AAACAAGTATCTCCCA-1 AAACATTTCCCGGATT-1 ...
+  TTGTTTCCATACAACT-1 TTGTTTGTATTACACG-1
+colData names(5): in_tissue array_row array_col sample_id sizeFactor
+reducedDimNames(0):
+mainExpName: NULL
+altExpNames(0):
+spatialCoords names(2) : pxl_col_in_fullres pxl_row_in_fullres
+imgData names(4): sample_id image_id data scaleFactor

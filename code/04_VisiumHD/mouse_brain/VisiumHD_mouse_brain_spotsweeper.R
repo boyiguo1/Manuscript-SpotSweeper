@@ -42,7 +42,7 @@ spe$subsets_mito_percent_discard <- isOutlier(spe$subsets_mito_percent, nmads=3,
 # ====== Add discards by fixed thresholds ========
 spe$detected_threshold <- spe$detected < 500
 spe$sum_threshold <- spe$sum < 500
-spe$subsets_mito_percent_threshold <- spe$subsets_mito_percent >10
+spe$subsets_mito_percent_threshold <- spe$subsets_mito_percent > 30
 
 # ======= SpotSweeper =========
 spe <- localOutliers(spe, metric = "sum", direction = "lower", log = TRUE)

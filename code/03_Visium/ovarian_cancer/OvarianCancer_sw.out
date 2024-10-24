@@ -1,0 +1,20 @@
+class: SpatialExperiment 
+dim: 33538 20123 
+metadata(1): BANKSY_params
+assays(3): counts logcounts H0
+rownames(33538): ENSG00000243485 ENSG00000237613 ... ENSG00000277475
+  ENSG00000268674
+rowData names(2): gene_id gene_name
+colnames(20123): AAACAAGTATCTCCCA-1 AAACATTTCCCGGATT-1 ...
+  TTGTTTCCATACAACT-1 TTGTTTGTATTACACG-1
+colData names(6): in_tissue array_row ... sizeFactor
+  clust_M0_lam0.2_k50_res0.8
+reducedDimNames(1): PCA_M0_lam0.2
+mainExpName: NULL
+altExpNames(0):
+spatialCoords names(2) : pxl_col_in_fullres pxl_row_in_fullres
+imgData names(4): sample_id image_id data scaleFactor
+null device 
+          1 
+null device 
+          1 

@@ -30,13 +30,13 @@ spe.mito <- spe[rownames(spe) %in% is.mito,]
 spe <- scuttle::addPerCellQC(spe, subsets=list(mito=is.mito))
 
 # ====== Add discards by MADs ========
-spe$sum_discard <- isOutlier(spe$sum, nmads=3, type="lower", log=TRUE)
-spe$detected_discard <- isOutlier(spe$detected, nmads=3, type="lower", log=TRUE)
+spe$sum_discard <- isOutlier(spe$sum, nmads=2, type="lower", log=TRUE)
+spe$detected_discard <- isOutlier(spe$detected, nmads=2, type="lower", log=TRUE)
 spe$subsets_mito_percent_discard <- isOutlier(spe$subsets_mito_percent, nmads=3, type="higher")
 
 # ====== Add discards by fixed thresholds ========
-spe$detected_threshold <- spe$detected < 500
-spe$sum_threshold <- spe$sum < 500
+spe$detected_threshold <- spe$detected < 50
+spe$sum_threshold <- spe$sum < 50
 spe$subsets_mito_percent_threshold <- spe$subsets_mito_percent > 30
 
 # ====== Add discards by miQC ======
@@ -109,8 +109,8 @@ spe$miQC_keep <- !metrics$keep
 
 
 # ======= SpotSweeper =========
-spe <- localOutliers(spe, metric = "sum", direction = "lower", log = TRUE)
-spe <- localOutliers(spe, metric = "detected", direction = "lower", log = TRUE)
-spe <- localOutliers(spe, metric = "subsets_mito_percent", direction = "higher", log = TRUE)
+spe <- localOutliers(spe, metric = "sum", direction = "lower", log = TRUE, n_neighbors = 50)
+spe <- localOutliers(spe, metric = "detected", direction = "lower", log = TRUE, n_neighbors = 50)
+spe <- localOutliers(spe, metric = "subsets_mito_percent", direction = "higher", log = TRUE, n_neighbors = 50)
 
 saveRDS(spe, here("processed-data", "Slideseq","SlideseqV2Hippocampus","slideseq_hippocampus_spotsweeper.rds"))
