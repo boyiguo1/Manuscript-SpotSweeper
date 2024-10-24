@@ -30,14 +30,14 @@ spe.mito <- spe[rownames(spe) %in% is.mito,]
 spe <- scuttle::addPerCellQC(spe, subsets=list(mito=is.mito))
 
 # ====== Add discards by MADs ========
-spe$sum_discard <- isOutlier(spe$sum, nmads=3, type="lower", log=TRUE)
-spe$detected_discard <- isOutlier(spe$detected, nmads=3, type="lower", log=TRUE)
-spe$subsets_mito_percent_discard <- isOutlier(spe$subsets_mito_percent, nmads=3, type="higher")
+spe$sum_discard <- isOutlier(spe$sum, nmads=2, type="lower", log=TRUE)
+spe$detected_discard <- isOutlier(spe$detected, nmads=2, type="lower", log=TRUE)
+spe$subsets_mito_percent_discard <- isOutlier(spe$subsets_mito_percent, nmads=2, type="higher")
 
 # ====== Add discards by fixed thresholds ========
-spe$detected_threshold <- spe$detected < 500
-spe$sum_threshold <- spe$sum < 500
-spe$subsets_mito_percent_threshold <- spe$subsets_mito_percent > 30
+spe$detected_threshold <- spe$detected < 1000
+spe$sum_threshold <- spe$sum < 1000
+spe$subsets_mito_percent_threshold <- spe$subsets_mito_percent > 2.5
 
 # ====== Add discards by miQC ======
 library(miQC)
