@@ -32,9 +32,9 @@ colnames(colData(spe.sw))
 
 
 # ====== Add discards by fixed thresholds ========
-spe$detected_threshold <- spe.sw$detected < 500
-spe$sum_threshold <- spe.sw$sum < 500
-spe$subsets_mito_percent_threshold <- spe.sw$subsets_mito_percent >10
+spe$detected_threshold <- spe$detected < 500
+spe$sum_threshold <- spe$sum < 500
+spe$subsets_mito_percent_threshold <- spe$subsets_mito_percent >10
 
 
 
