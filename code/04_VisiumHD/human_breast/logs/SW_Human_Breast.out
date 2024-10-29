@@ -1,0 +1,14 @@
+class: SpatialExperiment 
+dim: 18085 119082 
+metadata(1): BayesSpace.data
+assays(3): '' counts logcounts
+rownames(18085): SAMD11 NOC2L ... MT-ND6 MT-CYB
+rowData names(2): symbol is.HVG
+colnames(119082): s_016um_00107_00066-1 s_016um_00126_00213-1 ...
+  s_016um_00361_00190-1 s_016um_00242_00130-1
+colData names(16): barcode in_tissue ... col BS_k10
+reducedDimNames(1): PCA
+mainExpName: NULL
+altExpNames(0):
+spatialCoords names(2) : xcoord ycoord
+imgData names(1): sample_id

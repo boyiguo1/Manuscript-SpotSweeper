@@ -10,4 +10,4 @@
 module load conda_R/4.4
 
 # Run the R script
-Rscript VisiumHD_human_breast_cancer.R
+Rscript VisiumHD_human_breast_cancer_load.R

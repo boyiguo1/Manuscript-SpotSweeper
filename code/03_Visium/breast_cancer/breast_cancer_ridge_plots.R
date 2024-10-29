@@ -83,7 +83,7 @@ outlier_df <- outlier_df %>%
 outlier_df$method <- factor(outlier_df$method, levels=c( "miQC", "Threshold", "MAD", "SpotSweeper"))
 
 # bar plot sw vs mad outliers per domain
-png(here(plot_dir, "breast_cancer_outliers_per_domain.png"), width=4.5, height=5, res=300, units="in")
+png(here(plot_dir, "breast_cancer_outliers_per_domain.png"), width=4.5, height=6, res=300, units="in")
 ggplot(outlier_df, aes(x=domain, y=count, fill=method)) +
     geom_bar(stat="identity", position="dodge") +
     labs(x="Spatial Domain", y="Number of Outliers", fill="Method") +
@@ -92,7 +92,8 @@ ggplot(outlier_df, aes(x=domain, y=count, fill=method)) +
                       guide = guide_legend(nrow=2)) +
     theme(legend.position="top",
     legend.direction="horizontal") +
-    theme(text = element_text(size=16, face="bold")) 
+    theme(text = element_text(size=16, face="bold")) +
+    coord_flip()
 dev.off()
 
 
@@ -100,9 +101,23 @@ dev.off()
 
 # ===== Threshold Ridge plots =====
 
+outlier_df <- data.frame(MAD=spe$MAD_outliers,
+                         miQC=spe$miQC_keep,
+                         Threshold=spe$threshold_outliers, 
+                         SpotSweeper=spe$local_outliers,
+                         domain=factor(spe$clust_M0_lam0.2_k50_res0.8),
+                         sum = spe$sum,
+                         detected = spe$detected,
+                         subsets_mito_percent = spe$subsets_mito_percent,
+                         sum_z = spe$sum_z,
+                         detected_z = spe$detected_z,
+                         subsets_mito_percent_z = spe$subsets_mito_percent_z
+                        )
+
+
 # Extract the sum values that are marked as outliers
 outliers <- spe$sum[spe$sum_discard]
-sum_3MAD <- min(outliers)
+sum_3MAD <- max(outliers)
 sum_3MAD
 
 outliers <- spe$subsets_mito_percent[spe$subsets_mito_percent_discard]
@@ -110,7 +125,7 @@ mito_3MAD <- min(outliers)
 mito_3MAD
 
 outliers <- spe$detected[spe$detected_discard]
-detected_3MAD <- min(outliers)
+detected_3MAD <- max(outliers)
 detected_3MAD
 
 # make color palette for number of domains
@@ -120,7 +135,7 @@ pal <- domain_pal(n_domains)
 
 library(ggridges)
 # ridge plot of sum_umi with a threshold of 500
-png(here(plot_dir, "breast_cancer_ridge_sum_umi.png"), width=4, height=4, res=300, units="in")
+png(here(plot_dir, "breast_cancer_ridge_sum_umi.png"), width=4, height=6, res=300, units="in")
 ggplot(outlier_df, aes(x = sum, y = domain, fill = domain)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
   geom_vline(xintercept = 500, linetype = "dashed", color = "#eb7c69", size=1.75) +
@@ -128,7 +143,7 @@ ggplot(outlier_df, aes(x = sum, y = domain, fill = domain)) +
   scale_x_continuous(trans='log10') +
   theme_bw() +
   theme(legend.position = "none",
-        plot.title = element_text(size = 20),
+        plot.title = element_text(size = 18),
         text = element_text(size = 16, face = "bold")) +
   scale_fill_manual(values = pal) +
   labs(title = "Library size per domain",
@@ -136,7 +151,7 @@ ggplot(outlier_df, aes(x = sum, y = domain, fill = domain)) +
        y = "Spatial Domain")
 dev.off()
 
-png(here(plot_dir, "breast_cancer_ridge_mito_percent.png"), width=4, height=4, res=300, units="in")
+png(here(plot_dir, "breast_cancer_ridge_mito_percent.png"), width=4, height=6, res=300, units="in")
 ggplot(outlier_df, aes(x = subsets_mito_percent, y = domain, fill = domain)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
   geom_vline(xintercept = 10, linetype = "dashed", color = "#eb7c69", size=1.75) +
@@ -152,7 +167,7 @@ ggplot(outlier_df, aes(x = subsets_mito_percent, y = domain, fill = domain)) +
   #coord_cartesian(xlim = c(NA, 2))
 dev.off()
 
-png(here(plot_dir, "breast_cancer_ridge_unique_genes.png"), width=4, height=4, res=300, units="in")
+png(here(plot_dir, "breast_cancer_ridge_unique_genes.png"), width=4, height=6, res=300, units="in")
 ggplot(outlier_df, aes(x = detected, y = domain, fill = domain)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
   geom_vline(xintercept = 500, linetype = "dashed", color = "#eb7c69", size=1.75) +
@@ -174,14 +189,14 @@ dev.off()
 
 # ===== SpotSweeper ridge plots =====
 # ridge plot of sum_umi with a threshold of 500
-png(here(plot_dir, "breast_cancer_ridge_sum_umi_spotsweeper.png"), width=4, height=4, res=300, units="in")
+png(here(plot_dir, "breast_cancer_ridge_sum_umi_spotsweeper.png"), width=4, height=6, res=300, units="in")
 ggplot(outlier_df, aes(x = sum_z, y = domain, fill = domain)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
   geom_vline(xintercept = -3, linetype = "dashed", color = "#b82ac9", size=1.75) +
   #scale_x_continuous(trans='log10') +
   theme_bw() +
   theme(legend.position = "none",
-        plot.title = element_text(size = 20),
+        plot.title = element_text(size = 18),
         text = element_text(size = 16, face = "bold")) +
   scale_fill_manual(values = pal) +
   labs(title = "Library size (local z-score)",
@@ -189,7 +204,7 @@ ggplot(outlier_df, aes(x = sum_z, y = domain, fill = domain)) +
        y = "Spatial Domain") 
 dev.off()
 
-png(here(plot_dir, "breast_cancer_ridge_mito_percent_spotsweeper.png"), width=4, height=4, res=300, units="in")
+png(here(plot_dir, "breast_cancer_ridge_mito_percent_spotsweeper.png"), width=4, height=6, res=300, units="in")
 ggplot(outlier_df, aes(x = subsets_mito_percent_z, y = domain, fill = domain)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
   geom_vline(xintercept = 3, linetype = "dashed", color = "#b82ac9", size=1.75) +
@@ -203,7 +218,7 @@ ggplot(outlier_df, aes(x = subsets_mito_percent_z, y = domain, fill = domain)) +
        y = "Spatial Domain")
 dev.off()
 
-png(here(plot_dir, "breast_cancer_ridge_unique_genes_spotsweeper.png"), width=4, height=4, res=300, units="in")
+png(here(plot_dir, "breast_cancer_ridge_unique_genes_spotsweeper.png"), width=4, height=6, res=300, units="in")
 ggplot(outlier_df, aes(x = detected_z, y = domain, fill = domain)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
   geom_vline(xintercept = -3, linetype = "dashed", color = "#b82ac9", size=1.75) +
