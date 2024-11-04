@@ -11,13 +11,13 @@ library(tidyr)
 library(dplyr)
 
 
-plot_dir <- here("plots","VisiumHD","human_breast")
+plot_dir <- here("plots","VisiumHD","human_breast", "016")
 
 
 spe <- readRDS(here("processed-data", "VisiumHD","human_breast", "VisiumHD_HumanBreast_016_bayesspace.rds"))
 spe
 
-colnames(colData(spe.sw))
+colnames(colData(spe))
 #  [1] "barcode"                       "in_tissue"                    
 #  [3] "array_row"                     "array_col"                    
 #  [5] "sample_id"                     "sum"                          

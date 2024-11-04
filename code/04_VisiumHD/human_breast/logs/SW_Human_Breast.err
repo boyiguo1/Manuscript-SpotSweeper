@@ -1,4 +1,3 @@
-Unloading conda_R/4.4
 Loading conda_R/4.4
 here() starts at /dcs04/hicks/data/mtotty/Manuscript-SpotSweeper
 Loading required package: SingleCellExperiment
@@ -168,7 +167,4 @@ The following object is masked from ‘package:rhdf5’:
 
     h5ls
 
-Error in h(simpleError(msg, call)) : 
-  error in evaluating the argument 'x' in selecting a method for function 'colnames': error in evaluating the argument 'x' in selecting a method for function 'colData': object 'spe.sw' not found
-Calls: colnames ... colData -> .handleSimpleError -> h -> .handleSimpleError -> h
-Execution halted
+Loading required package: lattice

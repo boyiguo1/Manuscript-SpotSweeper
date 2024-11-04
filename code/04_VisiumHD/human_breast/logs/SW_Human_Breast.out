@@ -12,3 +12,15 @@ mainExpName: NULL
 altExpNames(0):
 spatialCoords names(2) : xcoord ycoord
 imgData names(1): sample_id
+ [1] "barcode"                      "in_tissue"                   
+ [3] "array_row"                    "array_col"                   
+ [5] "sample_id"                    "sum"                         
+ [7] "detected"                     "subsets_mito_percent"        
+ [9] "subsets_mito_sum"             "sum_discard"                 
+[11] "detected_discard"             "subsets_mito_percent_discard"
+[13] "sizeFactor"                   "row"                         
+[15] "col"                          "BS_k10"                      
+null device 
+          1 
+null device 
+          1 
