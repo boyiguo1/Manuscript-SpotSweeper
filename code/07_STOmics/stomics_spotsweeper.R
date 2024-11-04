@@ -109,8 +109,8 @@ spe$miQC_keep <- !metrics$keep
 
 
 # ======= SpotSweeper =========
-spe <- localOutliers(spe, metric = "sum", direction = "lower", log = TRUE)
-spe <- localOutliers(spe, metric = "detected", direction = "lower", log = TRUE)
-spe <- localOutliers(spe, metric = "subsets_mito_percent", direction = "higher", log = TRUE)
+spe <- localOutliers(spe, n_neighbors = 48, metric = "sum", direction = "lower", log = TRUE)
+spe <- localOutliers(spe, n_neighbors = 48, metric = "detected", direction = "lower", log = TRUE)
+spe <- localOutliers(spe, n_neighbors = 48, metric = "subsets_mito_percent", direction = "higher", log = TRUE)
 
 saveRDS(spe, here("processed-data", "STOmics","STOmics_prenatal_spotsweeper.rds"))
