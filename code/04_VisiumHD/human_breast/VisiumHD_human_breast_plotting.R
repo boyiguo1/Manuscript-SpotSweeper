@@ -98,6 +98,12 @@ dev.off()
 
 # ============ Spot Plots =============
 
+# make color palette for number of domains
+n_domains <- length(unique(colData(spe)$BS_k10))
+domain_pal <- colorRampPalette(RColorBrewer::brewer.pal(n_domains, "Set1"))
+pal <- domain_pal(n_domains)
+
+
 png(here(plot_dir, "HD_HumanBreast_016_BayesSpace_domains.png"), width=5, height=5, units="in", res=300)
 make_escheR(spe) |>
     add_fill(var="BS_k10", point_size=.6) +
@@ -113,21 +119,24 @@ dev.off()
 png(here(plot_dir, "HD_HumanBreast_016_sum_3MAD.png"), width=5, height=5, res=300, units="in")
 plotQC(spe, metric="detected", outliers="sum_discard", point_size=0.6, stroke=.8) +
     ggtitle("3 MAD") +
-  theme(plot.title = element_text(size = 20, hjust = 0.1),
+    guides(color = guide_legend(title = "Outlier")) +
+    theme(plot.title = element_text(size = 20, hjust = 0.1),
         legend.text = element_text(size=11))
 dev.off()
 
 png(here(plot_dir, "HD_HumanBreast_016_sum_threshold.png"), width=5, height=5, res=300, units="in")
 plotQC(spe, metric="detected", outliers="sum_threshold", point_size=0.6, stroke=.8) +
     ggtitle("Fixed Threshold") +
-  theme(plot.title = element_text(size = 20, hjust = 0.1),
+    guides(color = guide_legend(title = "Outlier")) +
+    theme(plot.title = element_text(size = 20, hjust = 0.1),
         legend.text = element_text(size=11))
 dev.off()
 
 png(here(plot_dir, "HD_HumanBreast_016_sum_spotsweeper.png"), width=5, height=5, res=300, units="in")
 plotQC(spe, metric="detected", outliers="sum_outliers", point_size=0.6, stroke=.8) +
     ggtitle("SpotSweeper") +
-  theme(plot.title = element_text(size = 20, hjust = 0.1),
+    guides(color = guide_legend(title = "Outlier")) +
+    theme(plot.title = element_text(size = 20, hjust = 0.1),
         legend.text = element_text(size=11))
 dev.off()
 
