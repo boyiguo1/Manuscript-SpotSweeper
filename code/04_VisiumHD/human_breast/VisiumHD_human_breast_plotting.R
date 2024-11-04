@@ -177,13 +177,12 @@ ggplot(outlier_df, aes(x = sum, y = domain, fill = domain)) +
   scale_x_continuous(trans='log10') +
   theme_bw() +
   theme(legend.position = "none",
-        plot.title = element_text(size = 20),
-        text = element_text(size = 15)) +
+        plot.title = element_text(size = 18),
+        text = element_text(size = 16, face = "bold")) +
   scale_fill_manual(values = pal) +
   labs(title = "Library size per domain",
        x = "Library Size",
-       y = "Spatial Domain") +
-       coord_cartesian(xlim = c(50, NA))
+       y = "Spatial Domain") 
 dev.off()
 
 png(here(plot_dir, "HD_HumanBreast_016_ridge_mito_percent.png"), width=4, height=6, res=300, units="in")
@@ -193,13 +192,12 @@ ggplot(outlier_df, aes(x = subsets_mito_percent, y = domain, fill = domain)) +
     geom_vline(xintercept = mito_3MAD, linetype = "dashed", color = "#fda638", size=1.75) +
   theme_bw() +
   theme(legend.position = "none",
-        plot.title = element_text(size = 20),
-        text = element_text(size = 15)) +
+        plot.title = element_text(size = 18),
+        text = element_text(size = 16, face = "bold")) +
   scale_fill_manual(values = pal) +
   labs(title = "Mito percent per domain",
        x = "Mitochondrial Ratio",
-       y = "Spatial Domain")+
-  coord_cartesian(xlim = c(NA, 20))
+       y = "Spatial Domain")
 dev.off()
 
 png(here(plot_dir, "HD_HumanBreast_016_ridge_unique_genes.png"), width=4, height=6, res=300, units="in")
@@ -210,13 +208,12 @@ ggplot(outlier_df, aes(x = detected, y = domain, fill = domain)) +
   theme_bw() +
   scale_x_continuous(trans='log10') +
   theme(legend.position = "none",
-        plot.title = element_text(size = 20),
-        text = element_text(size = 15)) +
+        plot.title = element_text(size = 18),
+        text = element_text(size = 16, face = "bold")) +
   scale_fill_manual(values = pal) +
   labs(title = "Unique genes per domain",
        x = "Number of genes",
-       y = "Spatial Domain")+
-       coord_cartesian(xlim = c(50, NA))
+       y = "Spatial Domain")
 dev.off()
 
 
@@ -231,8 +228,8 @@ ggplot(outlier_df, aes(x = sum_z, y = domain, fill = domain)) +
   #scale_x_continuous(trans='log10') +
   theme_bw() +
   theme(legend.position = "none",
-        plot.title = element_text(size = 20),
-        text = element_text(size = 15)) +
+        plot.title = element_text(size = 18),
+        text = element_text(size = 16, face = "bold")) +
   scale_fill_manual(values = pal) +
   labs(title = "Library size (local z-score)",
        x = "Z-score",
@@ -245,8 +242,8 @@ ggplot(outlier_df, aes(x = subsets_mito_percent_z, y = domain, fill = domain)) +
   geom_vline(xintercept = 3, linetype = "dashed", color = "#b82ac9", size=1.75) +
   theme_bw() +
   theme(legend.position = "none",
-        plot.title = element_text(size = 20),
-        text = element_text(size = 15)) +
+        plot.title = element_text(size = 18),
+        text = element_text(size = 16, face = "bold")) +
   scale_fill_manual(values = pal) +
   labs(title = "Mito percent  (local z-score)",
        x = "Z-score",
@@ -260,8 +257,8 @@ ggplot(outlier_df, aes(x = detected_z, y = domain, fill = domain)) +
   theme_bw() +
   #scale_x_continuous(trans='log10') +
   theme(legend.position = "none",
-        plot.title = element_text(size = 20),
-        text = element_text(size = 15)) +
+        plot.title = element_text(size = 18),
+        text = element_text(size = 16, face = "bold")) +
   scale_fill_manual(values = pal) +
   labs(title = "Unique genes (local z-score)",
        x = "Z-score",
