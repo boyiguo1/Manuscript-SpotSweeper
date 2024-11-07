@@ -7,7 +7,6 @@ library(ggspavis)
 library(BiocNeighbors)
 library(escheR)
 library(patchwork)
-library(tictoc)
 library(dplyr)
 library(tidyr)
 library(scran)
@@ -96,6 +95,86 @@ threshold_outliers <- qc_umi | qc_mito | qc_gene
 spe$discard_threshold <- threshold_outliers
 
 
+
+
+
+# ============= miQC =============
+
+library(miQC)
+
+rownames(spe) <- rowData(spe)$gene_name
+
+mt_genes <- grepl("^MT-",  rownames(spe))
+feature_ctrls <- list(mito = rownames(spe)[mt_genes])
+
+spe <- addPerCellQC(spe, subsets = feature_ctrls)
+
+model <- mixtureModel(spe, model_type = "spline")
+
+png(here(plot_dir, "miQC_mixtureModel.png"), width=4, height=4, units="in", res=300)
+plotModel(spe, model) + ggtitle("Visium DLPFC")
+dev.off()
+
+png(here(plot_dir, "miQC_mixtureModelFiltering.png"), width=3.5, height=3.5, units="in", res=300)
+plotFiltering(spe, model) + ggtitle("miQC outliers") +
+     scale_color_manual(values = c("TRUE" = "grey", "FALSE" = "red"))
+dev.off()
+
+# NOTE: miQC does not offer a way to simply flag spots, so I'm importing part of the filter function here to do so manually
+library(flexmix)
+
+posterior_cutoff = 0.75
+keep_all_below_boundary = TRUE
+enforce_left_cutoff = TRUE
+
+metrics <- as.data.frame(colData(spe))
+
+    if (is.null(model)) {
+        warning("call 'mixtureModel' explicitly to get stable model features")
+        model <- mixtureModel(spe)
+    }
+
+    intercept1 <- parameters(model, component = 1)[1]
+    intercept2 <- parameters(model, component = 2)[1]
+    if (intercept1 > intercept2) {
+        compromised_dist <- 1
+        intact_dist <- 2
+    } else {
+        intact_dist <- 1
+        compromised_dist <- 2
+    }
+
+    post <- posterior(model)
+    metrics$prob_compromised <- post[, compromised_dist]
+    spe$prob_compromised <- metrics$prob_compromised
+    metrics$keep <- metrics$prob_compromised <= posterior_cutoff
+
+    if (sum(metrics$keep)==nrow(metrics)){
+        stop("all cells passed posterior probability filtering. One 
+              cause of this is the model selecting two near-identical
+              distributions. Try rerunning mixtureModel() and/or 
+              setting a different random seed.")
+    }
+    
+    if (keep_all_below_boundary == TRUE) {
+        predictions <- fitted(model)[, intact_dist]
+        metrics$intact_prediction <- predictions
+        metrics[metrics$subsets_mito_percent <
+                    metrics$intact_prediction, ]$keep <- TRUE
+    }
+
+    if (enforce_left_cutoff == TRUE) {
+        min_discard <- min(metrics[!metrics$keep, ]$subsets_mito_percent)
+        min_index <- which(metrics$subsets_mito_percent == min_discard)[1]
+        lib_complexity <- metrics[min_index, ]$detected
+        metrics[metrics$detected <= lib_complexity &
+                    metrics$subsets_mito_percent >= min_discard, ]$keep <- FALSE
+    }
+
+# add "outliers" to SPE
+spe$miQC_keep <- !metrics$keep
+
+
 # # ===== Average percentage discarded across samples =====
 # Extract the required columns
 discard_mad_col <- spe$discard_mad
@@ -109,6 +188,7 @@ subject_col <- spe$subject
 df <- data.frame(discard_mad = discard_mad_col,
                  discard_threshold = discard_threshold_col,
                  discard_local = as.logical(discard_local_col),
+                 discard_miQC = spe$miQC_keep,
                  layer_guess_ordered = layer_guess_ordered_col,
                  sample_id = sample_id_col,
                  subject = subject_col)
@@ -122,6 +202,7 @@ discarded_df <- df %>%
     discarded_mad = sum(discard_mad, na.rm = TRUE),  # Counting TRUE as 1 and FALSE as 0
     discarded_local = sum(discard_local, na.rm = TRUE),  # Counting TRUE as 1 and FALSE as 0
     discarded_threshold = sum(discard_threshold, na.rm = TRUE),  # Counting TRUE as 1 and FALSE as 0
+    discarded_miQC = sum(discard_miQC, na.rm = TRUE),  # Counting TRUE as 1 and FALSE as 0
     .groups = 'keep'  # Dropping the grouping after summarise
   ) %>%
   mutate(
@@ -132,23 +213,62 @@ discarded_df <- df %>%
   )%>%
   mutate(
     percentage_threshold = (discarded_threshold/ total_spots) * 100  # Calculating the percentage
+  ) %>%
+  mutate(
+    percentage_miQC = (discarded_miQC/ total_spots) * 100  # Calculating the percentage
   )
 
 
+discarded_long <- discarded_df %>%
+  pivot_longer(
+    cols = starts_with("percentage_"),
+    names_to = "QC_method",
+    values_to = "percentage_discarded"
+  ) %>%
+  mutate(QC_method = recode(QC_method,
+                            "percentage_miQC" = "miQC",
+                            "percentage_local" = "SpotSweeper",
+                            "percentage_mad" = "MAD",
+                            "percentage_threshold" = "Threshold"
+))
 
-head(discarded_df)
-# # A tibble: 6 × 10
-# # Groups:   sample_id, layer_guess_ordered, subject [6]
-# sample_id layer_guess_ordered subject total_spots discarded_mad discarded_local
-# <chr>     <fct>               <chr>         <int>         <int>           <int>
-#   1 151507    Layer1              Br5292          817            14               1
-# 2 151507    Layer2              Br5292          305             0               0
-# 3 151507    Layer3              Br5292         1215            10               4
-# 4 151507    Layer4              Br5292          369             9               1
-# 5 151507    Layer5              Br5292          675             3               1
-# 6 151507    Layer6              Br5292          486             0               0
-# # ℹ 4 more variables: discarded_threshold <int>, percentage_mad <dbl>, percentage_local <dbl>,
-# #   percentage_threshold <dbl>
+# Reorder QC_method factor
+discarded_long <- discarded_long %>%
+  mutate(QC_method = factor(QC_method, levels = c("miQC",  "Threshold", "MAD","SpotSweeper")))
+
+
+
+# Reverse the order of the layers
+discarded_long <- discarded_long %>%
+  mutate(layer_guess_ordered = factor(layer_guess_ordered, levels = rev(levels(layer_guess_ordered))))
+
+# Plot 
+p <- ggplot(discarded_long, aes(x = layer_guess_ordered, y = percentage_discarded, fill = QC_method)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA, position = position_dodge(width = 0.75)) +  # Dodge to separate methods
+  scale_y_continuous(limits = c(0, 60)) +
+  labs(
+    title = NULL,
+    x = "Spatial Domain",
+    y = "Percent outliers (%)",
+    fill = "Method" 
+  ) +
+  theme_classic() +
+  theme(
+    legend.position = "top",
+    legend.direction = "horizontal",
+    axis.text.x = element_text( hjust = 1, size = 12),
+    plot.title = element_text(size = 18),
+    text = element_text(size = 16)) +
+  scale_fill_manual(values = c("#459395", "#eb7c69", "#fda638", "#b82ac9"), guide = guide_legend(nrow = 2)) +
+  coord_flip()
+
+# Save the plot to PNG
+png(file = here(plot_dir, 'Figure2_boxplot_all_methods_colored.png'), height = 8, width = 4.5, units = "in", res = 300)
+print(p)
+dev.off()
+
+# write csv
+write.csv(discarded_df, here(processed_dir,"outputs_for_paper", 'Figure2_boxplots.csv'), row.names = FALSE)
 
 
 # ===== Make df of QC metrics across layers =====
@@ -225,7 +345,7 @@ p2 <- make_escheR(spe.subset) |>
   ) +
   scale_fill_gradient(low ="white",high =  "black") +
   labs(fill = "Mito ratio") +
-  guides(color = guide_legend(title = "Discarded")) +
+  guides(color = guide_legend(title = "Outlier")) +
   ggtitle("Mitochondrial Ratio") +
   theme(plot.title = element_text(size = 20),
         legend.text = element_text(size=11))
@@ -245,7 +365,7 @@ p3 <- make_escheR(spe.subset) |>
   ) +
   scale_fill_gradient(low ="white",high =  "black") +
   labs(fill = "Sum Genes") +
-  guides(color = guide_legend(title = "Discarded")) +
+  guides(color = guide_legend(title = "Outlier")) +
   ggtitle("Global outliers") +
   theme(plot.title = element_text(size = 20),
         legend.text = element_text(size=11))
@@ -266,7 +386,7 @@ p4 <- make_escheR(spe.subset) |>
   ) +
   scale_fill_gradient(low ="white",high =  "black") +
   labs(fill = "Sum UMI") +
-  guides(color = guide_legend(title = "Discarded")) +
+  guides(color = guide_legend(title = "Outlier")) +
   ggtitle("Total UMI") +
   theme(plot.title = element_text(size = 20),
         legend.text = element_text(size=11))
@@ -300,10 +420,26 @@ dev.off()
 
 # ===== Panel E-G =====
 
+# Extract the sum values that are marked as outliers
+outliers <- spe$sum_umi[spe$qc_umi_mad]
+sum_3MAD <- max(outliers)
+sum_3MAD
+
+outliers <- spe$expr_chrM_ratio[spe$qc_mito_mad]
+mito_3MAD <- min(outliers)
+mito_3MAD
+
+outliers <- spe$sum_gene[spe$qc_gene_mad]
+detected_3MAD <- max(outliers)
+detected_3MAD
+
+
+
 # ridge plot of sum_umi with a threshold of 500
 p4 <- ggplot(qc_df, aes(x = sum_umi, y = layer, fill = layer)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
-  geom_vline(xintercept = 500, linetype = "dashed", color = "red", size=1) +
+  geom_vline(xintercept = 500, linetype = "dashed", color = "#eb7c69", size=1.75) +
+    geom_vline(xintercept = sum_3MAD, linetype = "dashed", color = "#fda638", size=1.75) +
   scale_x_continuous(trans='log10') +
   theme_bw() +
   theme(legend.position = "none",
@@ -317,7 +453,8 @@ p4 <- ggplot(qc_df, aes(x = sum_umi, y = layer, fill = layer)) +
 # ridge plot of expr_ratio with a threshold of 0.3
 p5 <- ggplot(qc_df, aes(x = expr_ratio, y = layer, fill = layer)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
-  geom_vline(xintercept = 0.275, linetype = "dashed", color = "red", size=1) +
+  geom_vline(xintercept = 0.275, linetype = "dashed", color = "#eb7c69", size=1.75) +
+    geom_vline(xintercept = mito_3MAD, linetype = "dashed", color = "#fda638", size=1.75) +
   theme_bw() +
   theme(legend.position = "none",
         plot.title = element_text(size = 20),
@@ -330,7 +467,8 @@ p5 <- ggplot(qc_df, aes(x = expr_ratio, y = layer, fill = layer)) +
 # ridge plot of sum_gene with a threshold of 500
 p6 <- ggplot(qc_df, aes(x = sum_gene, y = layer, fill = layer)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
-  geom_vline(xintercept = 500, linetype = "dashed", color = "red", size=1) +
+  geom_vline(xintercept = 500, linetype = "dashed", color = "#eb7c69", size=1.75) +
+    geom_vline(xintercept = detected_3MAD, linetype = "dashed", color = "#fda638", size=1.75) +
   theme_bw() +
   scale_x_continuous(trans='log10') +
   theme(legend.position = "none",
@@ -356,139 +494,72 @@ dev.off()
 
 
 
+# ======= Local outlier ridge plots =======
 
-# ===== Panel E ======
-
-# p <- ggplot(discarded_df, aes(x = layer_guess_ordered, y = percentage_mad, fill = layer_guess_ordered)) +
-#   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
-#   geom_jitter(width = 0.2, size = 2, aes(color = layer_guess_ordered), alpha = 0.7) +  # Display all data points with matching layer colors
-#   scale_fill_manual(values = spatialLIBD::libd_layer_colors) +
-#   scale_color_manual(values = spatialLIBD::libd_layer_colors) +
-#   labs(title = "3 MAD",
-#        x = "Spatial Domain",
-#        y = "Percent discarded (%)") +
-#   theme_bw(base_size=20) +
-#   theme(axis.text.x = element_text(angle = 45, hjust = 1, size=12),
-#         legend.position = "none")
-#
-# pdf(height = 5, width=5, here(plot_dir, 'Figure2_Panel_E.pdf'))
-# p
-# dev.off()
-
-
-
-
-# ======== Visualizing outliers via UMAP ========
-# set.seed(555)
-#
-# # change to gene names
-# rownames(spe) <- rowData(spe)$gene_name
-#
-# # get top 5000 HVGs
-# top.hvg <- getTopHVGs(spe, n=5000)
-#
-# #run PCA
-# spe <- runPCA(spe, ncomponents=50, subset_row=top.hvg)
-#
-# # batch correction using fastMNN
-# library(batchelor)
-# mnn.output <- fastMNN(spe, batch = spe$sample_id)
-#
-# # copy corrected PCA
-# reducedDims(spe)$PCA_mnn <-reducedDims(mnn.output)$corrected
-#
-# # run UMAP
-# spe <- runUMAP(spe, dimred = "PCA_mnn")
-#
-# # plot UMAP
-# p1 <- plotReducedDim(spe, "UMAP", colour_by = "layer_guess_reordered", point_size=0.2) +
-#   scale_color_manual(values = libd_layer_colors) +
-#   labs(title = "Manual Annotations") +
-#   theme(plot.title = element_text(size = 20))
-#
-# p2 <- plotReducedDim(spe, "UMAP", colour_by = "discard_mad", point_size=0.2)+
-#   scale_color_manual(values = c("TRUE" = "red", "FALSE" = "grey")) +
-#   labs(title = "Global Outliers (3 MADs)") +
-#   theme(plot.title = element_text(size = 20))
-#
-# p3 <- plotReducedDim(spe, "UMAP", colour_by = "local_outliers", point_size=0.2) +
-#   scale_color_manual(values = c("TRUE" = "red", "FALSE" = "grey")) +
-#   labs(title = "Local Outliers (3 Zs)") +
-#   theme(plot.title = element_text(size = 20))
-#
-# p4 <- plotReducedDim(spe, "UMAP", colour_by = "expr_chrM_ratio", point_size=0.2) +
-#   labs(title = "Mitochondrial Ratio") +
-#   theme(plot.title = element_text(size = 20))
-#
-# p5 <- plotReducedDim(spe, "UMAP", colour_by = "sum_umi", point_size=0.2) +
-#   labs(title = "Library Size") +
-#   theme(plot.title = element_text(size = 20))
-#
-# p6 <- plotReducedDim(spe, "UMAP", colour_by = "sum_gene", point_size=0.2) +
-#   labs(title = "Unique Genes") +
-#   theme(plot.title = element_text(size = 20))
-#
-# pdf(height = 7.5, width=15, here(plot_dir, 'Figure2_UMAPs.pdf'))
-# (p1+p2+p3)/(p4+p5+p6)
-# dev.off()
-
-
-
-# Get the percent of local outliers that are also considered global outliers
-local_outliers <- as.logical(as.character(spe$local_outliers))
-discard_threshold <-  as.logical(as.character(spe$discard_threshold))
-discard_mad <-  as.logical(as.character(spe$discard_mad))
-
-# First, find the observations that are local outliers
-local_outliers_indices <- which(local_outliers)
-
-# Then, check which of these are also mad outliers
-mad_outliers_among_local <- discard_mad[local_outliers_indices]
-threshold_outliers_among_local <- discard_threshold[local_outliers_indices]
-
-# Calculate the percentage
-percentage_mad_among_local <- sum(mad_outliers_among_local) / length(mad_outliers_among_local) * 100
-percentage_threshold_among_local <- sum(threshold_outliers_among_local) / length(threshold_outliers_among_local) * 100
-
-# visualize using bar plot. Use nice colors
-p <- ggplot(data.frame(x = c("MAD", "Threshold"), y = c(percentage_mad_among_local, percentage_threshold_among_local)), aes(x, y)) +
-  geom_bar(stat = "identity", fill = "skyblue") +
-  labs(title = "Local Outliers that are also Global Outliers",
-       x = "Outlier Type",
-       y = "Percent") +
-  theme_bw(base_size=20) +
-  theme(plot.title = element_text(size = 20))
-p
-
-# NOTES: Roughly 60% of current local outliers are also global outliers.
-
-# ========= Visualing outliers like miQC =========
-#library(miQC)
-
-
-p1 <- plotColData(spe, x="sum_gene", y="expr_chrM_ratio", color_by="discard_threshold", point_size=1) +
-  scale_color_manual(values = c("TRUE" = "red", "FALSE" = "grey")) +
+# ridge plot of sum_umi with a threshold of 500
+p4 <- ggplot(qc_df, aes(x = sum_umi_z, y = layer, fill = layer)) +
+  geom_density_ridges(alpha = 0.8, scale = 1.5) +
+  geom_vline(xintercept = -3, linetype = "dashed", color = "#b82ac9", size=1.75) +
   theme_bw() +
-  labs(title = "Global Outliers",
-       x = "Number of genes",
-       y = "Mitochondrial Ratio") +
-  theme(plot.title = element_text(size = 20),
+  theme(legend.position = "none",
+        plot.title = element_text(size = 20),
         text = element_text(size = 15)) +
-  guides(color = guide_legend(title = "Discarded"))
+  scale_fill_manual(values = libd_layer_colors) +
+  labs(title = "Library size (local z-score)",
+       x = "Z-score",
+       y = "Spatial Domain")
 
-png(height = 5, width=7, units="in",res=300, here(plot_dir, 'Figure2_gene_vs_mito.png'))
-p1
+# ridge plot of expr_ratio with a threshold of 0.3
+p5 <- ggplot(qc_df, aes(x = expr_ratio_z, y = layer, fill = layer)) +
+  geom_density_ridges(alpha = 0.8, scale = 1.5) +
+  geom_vline(xintercept = 3, linetype = "dashed", color = "#b82ac9", size=1.75) +
+  theme_bw() +
+  theme(legend.position = "none",
+        plot.title = element_text(size = 20),
+        text = element_text(size = 15)) +
+  scale_fill_manual(values = libd_layer_colors) +
+  labs(title = "Mito ratio (local z-score)",
+       x = "Z-score",
+       y = "Spatial Domain")
+
+# ridge plot of sum_gene with a threshold of 500
+p6 <- ggplot(qc_df, aes(x = sum_gene_z, y = layer, fill = layer)) +
+  geom_density_ridges(alpha = 0.8, scale = 1.5) +
+  geom_vline(xintercept = -3, linetype = "dashed", color = "#b82ac9", size=1.75) +
+  theme_bw() +
+  theme(legend.position = "none",
+        plot.title = element_text(size = 20),
+        text = element_text(size = 15)) +
+  scale_fill_manual(values = libd_layer_colors) +
+  labs(title = "Unique genes (local z-score)",
+       x = "Z-score",
+       y = "Spatial Domain")
+
+pdf(height = 5, width=5, here(plot_dir, 'Figure2_ridge_umi_z.pdf'))
+p4
+dev.off()
+
+pdf(height = 5, width=5, here(plot_dir, 'Figure2_ridge_mito_z.pdf'))
+p5
+dev.off()
+
+pdf(height = 5, width=5, here(plot_dir, 'Figure2_ridge_gene_z.pdf'))
+p6
 dev.off()
 
 
 
 
-# ============= Figure 1 - Part 2 =============
+# ====== spotplot grid of all samples ======
+# loop through all samples
 
+samples <- unique(spe$sample_id)
 
-p1 <- make_escheR(spe.subset) |>
-  add_fill(var = "sum_gene") |>
-  add_ground(var = "sum_gene_outliers", stroke = 1) +
+for (sample in samples) {
+  spe.subset <- subset(spe, ,sample_id == sample)
+  p1 <- make_escheR(spe.subset) |>
+  add_fill(var = "sum_umi") |>
+  add_ground(var = "local_outliers", stroke = 1) +
   scale_color_manual(
     name = "", # turn off legend name for ground_truth
     values = c(
@@ -496,59 +567,36 @@ p1 <- make_escheR(spe.subset) |>
       "FALSE" = "transparent")
   ) +
   scale_fill_gradient(low ="white",high =  "black") +
-  labs(fill = "Sum Genes") +
-  guides(color = guide_legend(title = "Discarded")) +
-  ggtitle("Local outliers") +
+  labs(fill = "Sum UMI") +
+  guides(color = guide_legend(title = "Outlier")) +
+  ggtitle(paste0("Sample: ", sample)) +
   theme(plot.title = element_text(size = 20),
         legend.text = element_text(size=11))
 
-pdf(height = 5, width=5, here(plot_dir, 'Figure2_spotplot_gene_outliers.pdf'))
-p1
-dev.off()
+  png(here(plot_dir,"spotplots", paste0('Figure2_spotplot_', sample, '.png')), width = 5, height = 5, units = "in", res = 300)
+  print(p1)
+  dev.off()
+}
 
-p2 <- make_escheR(spe.subset) |>
-  add_fill(var = "expr_chrM_ratio") |>
-  add_ground(var = "expr_chrM_ratio_outliers", stroke = 1) +
-  scale_color_manual(
-    name = "", # turn off legend name for ground_truth
-    values = c(
-      "TRUE" = "red2",
-      "FALSE" = "transparent")
-  ) +
-  scale_fill_gradient(low ="white",high =  "black") +
-  labs(fill = "Mito Ratio)") +
-  guides(color = guide_legend(title = "Discarded")) +
-  ggtitle("Mitochondrial Ratio") +
-  theme(plot.title = element_text(size = 20),
-        legend.text = element_text(size=11))
 
-pdf(height = 5, width=5, here(plot_dir, 'Figure2_spotplot_mito_outliers.pdf'))
-p2
-dev.off()
-
-p3 <- make_escheR(spe.subset) |>
-  add_fill(var = "sum_gene_log") |>
-  add_ground(var = "sum_gene_outliers", stroke = 1) +
-  scale_color_manual(
-    name = "", # turn off legend name for ground_truth
-    values = c(
-      "TRUE" = "red2",
-      "FALSE" = "transparent")
-  ) +
-  scale_fill_gradient(low ="white",high =  "black") +
-  labs(fill = "log1p(Sum Genes)") +
-  guides(color = guide_legend(title = "Discarded")) +
-  ggtitle("Unique Genes") +
-  theme(plot.title = element_text(size = 20),
-        legend.text = element_text(size=11))
-
-pdf(height = 5, width=5, here(plot_dir, 'Figure2_spotplot_geneLog_outliers.pdf'))
-p3
-dev.off()
+# save spe
+saveRDS(spe, here(processed_dir,"figure_2", 'spe_spotsweeper.rds'))
 
 
 
-# ============ Plots for schematic =============
+
+
+
+
+
+
+
+
+
+# ===== Other stuff below ======
+
+
+# == Plots for schematic ==
 
 p1 <- make_escheR(spe.subset) |>
   add_fill(var = "sum_gene_outliers") +
@@ -696,79 +744,3 @@ final_summary <- summary_df %>%
 
 # Display the final summary
 print(final_summary)
-
-
-# ===== Panel M-O =====
-
-# ridge plot of sum_umi with a threshold of 500
-p4 <- ggplot(qc_df, aes(x = sum_umi_z, y = layer, fill = layer)) +
-  geom_density_ridges(alpha = 0.8, scale = 1.5) +
-  geom_vline(xintercept = -3, linetype = "dashed", color = "red", size=1) +
-  theme_bw() +
-  theme(legend.position = "none",
-        plot.title = element_text(size = 20),
-        text = element_text(size = 15)) +
-  scale_fill_manual(values = libd_layer_colors) +
-  labs(title = "Library size (local z-score)",
-       x = "Z-score",
-       y = "Spatial Domain")
-
-# ridge plot of expr_ratio with a threshold of 0.3
-p5 <- ggplot(qc_df, aes(x = expr_ratio_z, y = layer, fill = layer)) +
-  geom_density_ridges(alpha = 0.8, scale = 1.5) +
-  geom_vline(xintercept = 3, linetype = "dashed", color = "red", size=1) +
-  theme_bw() +
-  theme(legend.position = "none",
-        plot.title = element_text(size = 20),
-        text = element_text(size = 15)) +
-  scale_fill_manual(values = libd_layer_colors) +
-  labs(title = "Mito ratio (local z-score)",
-       x = "Z-score",
-       y = "Spatial Domain")
-
-# ridge plot of sum_gene with a threshold of 500
-p6 <- ggplot(qc_df, aes(x = sum_gene_z, y = layer, fill = layer)) +
-  geom_density_ridges(alpha = 0.8, scale = 1.5) +
-  geom_vline(xintercept = -3, linetype = "dashed", color = "red", size=1) +
-  theme_bw() +
-  theme(legend.position = "none",
-        plot.title = element_text(size = 20),
-        text = element_text(size = 15)) +
-  scale_fill_manual(values = libd_layer_colors) +
-  labs(title = "Unique genes (local z-score)",
-       x = "Z-score",
-       y = "Spatial Domain")
-
-pdf(height = 5, width=5, here(plot_dir, 'Figure2_ridge_umi_z.pdf'))
-p4
-dev.off()
-
-pdf(height = 5, width=5, here(plot_dir, 'Figure2_ridge_mito_z.pdf'))
-p5
-dev.off()
-
-pdf(height = 5, width=5, here(plot_dir, 'Figure2_ridge_gene_z.pdf'))
-p6
-dev.off()
-
-
-
-
-# ==== Mi QC ======
-
-
-p1 <- plotColData(spe, x="sum_gene", y="expr_chrM_ratio", color_by="local_outliers", point_size=1) +
-  scale_color_manual(values = c("TRUE" = "red", "FALSE" = "grey")) +
-  theme_bw() +
-  labs(title = "Local Outliers",
-       x = "Number of genes",
-       y = "Mitochondrial Ratio") +
-  theme(plot.title = element_text(size = 20),
-        text = element_text(size = 15)) +
-  guides(color = guide_legend(title = "Discarded"))
-
-png(height = 5, width=5, units="in",res=300, here(plot_dir, 'Figure2_geneVSmito_local.png'))
-p1
-dev.off()
-
-

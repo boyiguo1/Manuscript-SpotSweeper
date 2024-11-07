@@ -7,13 +7,15 @@ library(escheR)
 library(patchwork)
 library(scran)
 library(scater)
+library(Seurat)
 
 
 plot_dir <- here("plots","VisiumHD","mouse_brain")
 
 
-spe <- readRDS(here("processed-data", "VisiumHD","VisiumHD_MouseBrain_016.rds"))
+spe <- readRDS(here("processed-data", "VisiumHD","VisiumHD_MouseBrain_008.rds"))
 spe
+
 
 # ===== Add QC Metrics =====
 
@@ -44,17 +46,23 @@ spe$subsets_mito_percent_discard <- isOutlier(spe$subsets_mito_percent, nmads=3,
 # ========== Banksy clustering ===========
 library(Banksy)
 
+set.seed(1000)
+spe <- logNormCounts(spe)
+
+# get only top 1000 HVGs
+dec <- modelGeneVar(spe)
+chosen <- getTopHVGs(dec, n=1000)
+
+spe.hvg <- spe[chosen,]
+
 lambda <- 0.8
 k_geom <- 30
 npcs <- 50
 aname <- "counts"
-spe <- Banksy::computeBanksy(spe, assay_name = aname, k_geom = k_geom)
 
-set.seed(1000)
-spe <- Banksy::runBanksyPCA(spe, lambda = lambda, npcs = npcs)
-
-set.seed(1000)
-spe <- Banksy::clusterBanksy(spe, lambda = lambda, npcs = npcs, resolution = 0.8)
+spe.hvg <- Banksy::computeBanksy(spe.hvg, assay_name = aname, k_geom = k_geom)
+spe.hvg <- Banksy::runBanksyPCA(spe.hvg, lambda = lambda, npcs = npcs)
+spe.hvg <- Banksy::clusterBanksy(spe.hvg, lambda = lambda, npcs = npcs, resolution = 0.8)
 
 
-saveRDS(spe, here("processed-data", "VisiumHD","VisiumHD_MouseBrain_016_banksy.rds"))
+saveRDS(spe.hvg, here("processed-data", "VisiumHD","VisiumHD_MouseBrain_008_banksy_hvgs.rds"))

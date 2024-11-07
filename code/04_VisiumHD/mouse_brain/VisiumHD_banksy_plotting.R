@@ -13,8 +13,14 @@ library(scater)
 plot_dir <- here("plots","VisiumHD","mouse_brain")
 
 
-spe <- readRDS(here("processed-data", "VisiumHD","VisiumHD_MouseBrain_016_banksy.rds"))
+spe.hvg <- readRDS(here("processed-data", "VisiumHD","mouse_brain","VisiumHD_MouseBrain_008_banksy_spotsweeper.rds"))
+spe <- spe.hvg
+
+spe <-  readRDS(here("processed-data", "VisiumHD","VisiumHD_MouseBrain_008.rds"))
 spe
+
+
+
 
 
 

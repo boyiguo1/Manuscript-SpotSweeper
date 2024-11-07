@@ -108,9 +108,9 @@ spe$miQC_keep <- !metrics$keep
 
 
 # ======= SpotSweeper =========
-spe <- localOutliers(spe, metric = "sum", direction = "lower", log = TRUE)
-spe <- localOutliers(spe, metric = "detected", direction = "lower", log = TRUE)
-spe <- localOutliers(spe, metric = "subsets_mito_percent", direction = "higher", log = TRUE)
+spe <- localOutliers(spe,  n_neighbors = 48, metric = "sum", direction = "lower", log = TRUE)
+spe <- localOutliers(spe,  n_neighbors = 48, metric = "detected", direction = "lower", log = TRUE)
+spe <- localOutliers(spe,  n_neighbors = 48, metric = "subsets_mito_percent", direction = "higher", log = TRUE)
 
 # save
 saveRDS(spe, here("processed-data", "VisiumHD", "human_breast", "VisiumHD_HumanBreast_016_spotsweeper.rds"))

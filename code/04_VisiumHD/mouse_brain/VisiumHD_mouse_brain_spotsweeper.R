@@ -11,7 +11,7 @@ library(scater)
 
 plot_dir <- here("plots","VisiumHD","mouse_brain")
 
-spe <- readRDS(here("processed-data", "VisiumHD", "mouse_brain", "VisiumHD_MouseBrain_016_banksy.rds"))
+spe <- readRDS(here("processed-data", "VisiumHD", "mouse_brain", "VisiumHD_MouseBrain_008_banksy_hvgs.rds"))
 spe
 
 # ===== Add QC Metrics =====
@@ -49,4 +49,4 @@ spe <- localOutliers(spe, metric = "sum", direction = "lower", log = TRUE)
 spe <- localOutliers(spe, metric = "detected", direction = "lower", log = TRUE)
 spe <- localOutliers(spe, metric = "subsets_mito_percent", direction = "higher", log = TRUE)
 
-saveRDS(spe, here("processed-data", "VisiumHD", "mouse_brain", "VisiumHD_MouseBrain_016_banksy_spotsweeper.rds"))
+saveRDS(spe, here("processed-data", "VisiumHD", "mouse_brain", "VisiumHD_MouseBrain_008_banksy_spotsweeper.rds"))

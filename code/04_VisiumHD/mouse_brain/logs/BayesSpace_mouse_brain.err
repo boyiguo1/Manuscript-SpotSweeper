@@ -119,7 +119,7 @@ The following object is masked from ‘package:rhdf5’:
 
 Warning message:
 In asMethod(object) :
-  sparse->dense coercion: allocating vector of size 1.5 GiB
-Neighbors were identified for 98917 out of 98917 spots.
+  sparse->dense coercion: allocating vector of size 5.9 GiB
+Neighbors were identified for 393543 out of 393543 spots.
 Fitting model...
 Calculating labels using iterations 1000 through 10000.
