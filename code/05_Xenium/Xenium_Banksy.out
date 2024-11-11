@@ -1,0 +1,15 @@
+class: SpatialExperiment 
+dim: 5006 63173 
+metadata(0):
+assays(1): counts
+rownames(5006): ENSMUSG00000052595 ENSMUSG00000030111 ...
+  ENSMUSG00000055670 ENSMUSG00000027596
+rowData names(3): ID Symbol Type
+colnames(63173): aaaalabd-1 aaabcnhh-1 ... oilgmbbn-1 oilhbhom-1
+colData names(25): cell_id transcript_counts ... detected_outliers
+  detected_z
+reducedDimNames(0):
+mainExpName: NULL
+altExpNames(0):
+spatialCoords names(2) : x_centroid y_centroid
+imgData names(1): sample_id

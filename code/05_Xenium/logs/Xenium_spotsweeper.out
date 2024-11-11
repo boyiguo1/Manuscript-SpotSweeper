@@ -1,0 +1,44 @@
+class: SpatialFeatureExperiment 
+dim: 541 118708 
+metadata(1): Samples
+assays(1): counts
+rownames(541): ABCC11 ACTA2 ... BLANK_0497 BLANK_0499
+rowData names(6): ID Symbol ... vars cv2
+colnames: NULL
+colData names(10): Sample Barcode ... nCounts nGenes
+reducedDimNames(0):
+mainExpName: NULL
+altExpNames(0):
+spatialCoords names(2) : x_centroid y_centroid
+imgData names(1): sample_id
+
+unit:
+Geometries:
+colGeometries: centroids (POINT), cellSeg (POLYGON), nucSeg (GEOMETRY) 
+
+Graphs:
+sample01: class: SpatialFeatureExperiment 
+dim: 541 118708 
+metadata(1): Samples
+assays(1): counts
+rownames(541): ABCC11 ACTA2 ... BLANK_0497 BLANK_0499
+rowData names(6): ID Symbol ... vars cv2
+colnames: NULL
+colData names(10): Sample Barcode ... nCounts nGenes
+reducedDimNames(0):
+mainExpName: NULL
+altExpNames(0):
+spatialCoords names(2) : x_centroid y_centroid
+imgData names(1): sample_id
+
+unit:
+Geometries:
+colGeometries: centroids (POINT), cellSeg (POLYGON), nucSeg (GEOMETRY) 
+
+Graphs:
+sample01:  [1] "Sample"                  "Barcode"                
+ [3] "transcript_counts"       "control_probe_counts"   
+ [5] "control_codeword_counts" "cell_area"              
+ [7] "nucleus_area"            "sample_id"              
+ [9] "nCounts"                 "nGenes"                 
+[11] "Cluster"                
