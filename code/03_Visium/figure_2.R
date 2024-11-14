@@ -23,21 +23,9 @@ spe
 
 
 # ========= Spatial outlier detection =======
-spe <- localOutliers(spe,
-                     metric="sum_umi",
-                     direction="lower"
-)
-
-spe <- localOutliers(spe,
-                     metric="sum_gene",
-                     direction="lower"
-)
-
-spe <- localOutliers(spe,
-                     metric="expr_chrM_ratio",
-                     direction="higher",
-                     log=FALSE
-)
+spe <- localOutliers(spe, metric="sum_umi", direction="lower", log=TRUE)
+spe <- localOutliers(spe, metric="sum_gene", direction="lower", log=TRUE)
+spe <- localOutliers(spe, metric="expr_chrM_ratio", direction="higher", log=FALSE)
 
 spe$local_outliers <- as.logical(spe$sum_umi_outliers) |
   as.logical(spe$sum_gene_outliers) |
@@ -366,13 +354,55 @@ p3 <- make_escheR(spe.subset) |>
   scale_fill_gradient(low ="white",high =  "black") +
   labs(fill = "Sum Genes") +
   guides(color = guide_legend(title = "Outlier")) +
-  ggtitle("Global outliers") +
+  ggtitle("Threshold") +
   theme(plot.title = element_text(size = 20),
         legend.text = element_text(size=11))
 
-pdf(height = 5, width=5, here(plot_dir, 'Figure2_spotplot_gene_global.pdf'))
+pdf(height = 5, width=5, here(plot_dir, 'Figure2_spotplot_gene_threshold.pdf'))
 p3
 dev.off()
+
+p <- make_escheR(spe.subset) |>
+  add_fill(var = "sum_gene") |>
+  add_ground(var = "discard_mad", stroke = 1) +
+  scale_color_manual(
+    name = "", # turn off legend name for ground_truth
+    values = c(
+      "TRUE" = "red2",
+      "FALSE" = "transparent")
+  ) +
+  scale_fill_gradient(low ="white",high =  "black") +
+  labs(fill = "Sum Genes") +
+  guides(color = guide_legend(title = "Outlier")) +
+  ggtitle("MAD") +
+  theme(plot.title = element_text(size = 20),
+        legend.text = element_text(size=11))
+
+pdf(height = 5, width=5, here(plot_dir, 'Figure2_spotplot_gene_MAD.pdf'))
+p
+dev.off()
+
+
+p <- make_escheR(spe.subset) |>
+  add_fill(var = "sum_gene") |>
+  add_ground(var = "local_outliers", stroke = 1) +
+  scale_color_manual(
+    name = "", # turn off legend name for ground_truth
+    values = c(
+      "TRUE" = "red2",
+      "FALSE" = "transparent")
+  ) +
+  scale_fill_gradient(low ="white",high =  "black") +
+  labs(fill = "Sum Genes") +
+  guides(color = guide_legend(title = "Outlier")) +
+  ggtitle("Local outliers") +
+  theme(plot.title = element_text(size = 20),
+        legend.text = element_text(size=11))
+
+pdf(height = 5, width=5, here(plot_dir, 'Figure2_spotplot_gene_local.pdf'))
+p
+dev.off()
+
 
 
 p4 <- make_escheR(spe.subset) |>

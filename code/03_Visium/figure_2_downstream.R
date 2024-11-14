@@ -139,7 +139,7 @@ dev.off()
 
 saveRDS(spe, file = here(processed_dir, 'figure_2', "spe_spotsweeper_precast.rds"))
 
-
+# load
 
 
 
@@ -221,32 +221,3 @@ dev.off()
 # save results to csv
 write.csv(average_percent_neighbors, here(processed_dir, 'outputs_for_paper', 'Figure_2_neighbors_boxplot.csv'), row.names = FALSE)
 
-
-
-#  ============== cluster single sample for better plotting ===============
-
-## Add BayesSpace metadata
-spe.subset <- spatialPreprocess(spe.subset, platform="Visium", skip.PCA=TRUE)
-
-colData(spe.subset)$row <- spe.subset$array_row
-colData(spe.subset)$col <- spe.subset$array_col
-
-metadata(spe.subset)$BayesSpace.data <- list(platform = "Visium", is.enhanced = FALSE)
-
-d <- 15  # Number of PCs
-
-## Run BayesSpace clustering
-dlpfc <- spatialCluster(spe.subset, q=7, d=d, platform='Visium',
-                        nrep=10000, gamma=3, save.chain=TRUE)
-spe.subset$BS_k7 <- as.factor(dlpfc$spatial.cluster)
-
-
-png(here(plot_dir, "figure_2_downstream_3.png"), width = 10, height = 5, units = 'in', res = 300)
-p1 <- make_escheR(spe.subset) |>
-    add_fill(var='BS_k7') 
-
-p2 <- make_escheR(spe.subset) |>
-    add_fill(var='local_outliers')
-
-p1 + p2
-dev.off()
