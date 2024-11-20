@@ -83,23 +83,6 @@ spe$nGenes_discard_3mad <- isOutlier(spe$nGenes, nmads=3, type="lower", log=TRUE
 spe <- localOutliers(spe, metric="nCounts", direction="lower", log=TRUE)
 spe <- localOutliers(spe, metric="nGenes", direction="lower", log=TRUE)
 
-# local outlier: PCA euclidean distance
-inds_keep <- spe$nCounts > 0
-spe <- spe[,inds_keep]
-spe <- logNormCounts(spe)
-
-set.seed(1234)
-spe <- runPCA(spe, ncomponents=20, scale = TRUE)
-
-spe.temp <- localOutliers(spe, metric="nCounts", direction="lower", log=TRUE, neighborhood=reducedDims(spe)$PCA[,1:20], workers=8)
-spe.temp <- localOutliers(spe, metric="nGenes", direction="lower", log=TRUE, neighborhood=reducedDims(spe)$PCA[,1:20], workers=8)
-
-spe$nCounts_z_pca <- spe.temp$nCounts_z
-spe$nGenes_z_pca <- spe.temp$nGenes_z
-
-spe$nCounts_outliers_pca <- spe.temp$nCounts_outliers
-spe$nGenes_outliers_pca <- spe.temp$nGenes_outliers
-
 
 # save
 saveRDS(spe, here("processed-data", "Xenium", "Xenium_spotsweeper.rds"))

@@ -32,6 +32,31 @@ spe$local_outliers <- as.logical(spe$sum_umi_outliers) |
   as.logical(spe$expr_chrM_ratio_outliers)
 
 
+colnames(colData(spe))
+# [69] "array_col"                   "sum_umi_log"                
+# [71] "sum_umi_outliers"            "sum_umi_z"    
+
+
+# # consider outliers if theabs(z-score) by dividing 0.6745 is > 3
+# spe$sum_umi_outliers_corrected <- abs(spe$sum_umi_z)*0.6745 > 3
+# spe$sum_gene_outliers_corrected <- abs(spe$sum_gene_z)*0.6745 > 3
+# spe$expr_chrM_ratio_outliers_corrected <- abs(spe$expr_chrM_ratio_z)*0.6745 > 3
+
+
+
+# #subset to first sample
+# spe.subset <- subset(spe, ,sample_id == unique(spe$sample_id)[1])
+# png(here(plot_dir, "Figure2_spotplot_local_umi.png"), width=10, height=5, units="in", res=300)
+# p1 <- make_escheR(spe.subset ) |> 
+#   add_fill(var = "sum_umi_outliers") +
+#   scale_fill_manual(values = c("TRUE" = "red2", "FALSE" = "grey")) 
+
+# p2 <- make_escheR(spe.subset ) |> 
+#   add_fill(var = "sum_umi_outliers_corrected") +
+#   scale_fill_manual(values = c("TRUE" = "red2", "FALSE" = "grey"))
+#   p1+p2
+# dev.off()
+
 
 # ========= Standard outlier detection (MAD) =======
 library(scuttle)

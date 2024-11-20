@@ -1,9 +1,4 @@
-if (!require("devtools")) install.packages("devtools")
-remotes::install_github("MicTott/SpotSweeper", force=TRUE)
-
-
 library(SpotSweeper)
-
 library(RANN)
 library(here)
 library(SpatialExperiment)
@@ -12,7 +7,6 @@ library(ggspavis)
 library(BiocNeighbors)
 library(escheR)
 library(patchwork)
-library(tictoc)
 library(dplyr)
 library(tidyr)
 library(scran)
@@ -22,27 +16,15 @@ library(escheR)
 library(RColorBrewer)
 library(BayesSpace)
 
-plot_dir = here('plots',"figure_4")
+plot_dir = here('plots',"Visium", "figure_4_5")
 processed_dir = here('raw-data')
 
 
 # large DLPFC dataset
-load(here("raw-data","dlPFC_raw.RData"))
+load(here("processed-data","Visium","dlPFC_raw.Rdata"))
 spe.pfc <- spe_raw
 spe.pfc
-# class: SpatialExperiment
-# dim: 36601 149757
-# metadata(0):
-#   assays(1): counts
-# rownames(36601): ENSG00000243485 ENSG00000237613 ... ENSG00000278817 ENSG00000277196
-# rowData names(7): source type ... gene_type gene_search
-# colnames(149757): AAACAACGAATAGTTC-1 AAACAAGTATCTCCCA-1 ... TTGTTTGTATTACACG-1 TTGTTTGTGTAAATTC-1
-# colData names(27): sample_id in_tissue ... sample_id_complete count
-# reducedDimNames(3): 10x_pca 10x_tsne 10x_umap
-# mainExpName: NULL
-# altExpNames(0):
-#   spatialCoords names(2) : pxl_col_in_fullres pxl_row_in_fullres
-# imgData names(4): sample_id image_id data scaleFactor
+
 
 
 
@@ -933,30 +915,4 @@ png(here(plot_dir,"hangnail_qc_metrics.png"), width=20, height=6, units="in", re
   plot_layout(ncol = 4)
 dev.off()
 
-
-
-
-# ============ Local variance-mean mito relationship =================
-
-SpotSweeper::plotQC(spe.dryspot, metric="multiscale_var")
-
-plotColData(spe.dryspot, x="sum_umi_log", y="multiscale_var")
-
-# kmeans
-clust <- kmeans(data.frame(spe.dryspot$sum_umi_log, spe.dryspot$multiscale_var, spe.dryspot$sum_gene_log), centers=2)
-
-spe.dryspot$Kmeans_clusters <- as.factor(clust$cluster)
-
-plotColData(spe.dryspot, x="sum_umi_log", y="multiscale_var", color_by="Kmeans_clusters")
-
-
-# gmm
-clust <- Mclust(data.frame(spe.dryspot$sum_umi_log, spe.dryspot$multiscale_var, spe.dryspot$sum_gene_log), G=2)
-
-spe.dryspot$Mclust_clusters <- as.factor(clust$classification)
-
-plotColData(spe.dryspot, x="sum_umi_log", y="multiscale_var", color_by="Mclust_clusters")
-
-make_escheR(spe.dryspot) |>
-  add_fill("Kmeans_clusters", point_size=2.3)
 

@@ -523,7 +523,7 @@ p1 <- ggplot(barcode_counts_avg, aes(x = row, y = mean)) +
 
 
 png(here(plot_dir, "barcode_read_count_ranked.png"), width=5, height=5, units="in", res=300)
-p1
+p1sq
 dev.off()
 
 # get the top 10 and bottom 10 barcodes

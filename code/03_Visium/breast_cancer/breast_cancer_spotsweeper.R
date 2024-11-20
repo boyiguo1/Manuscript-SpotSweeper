@@ -18,8 +18,6 @@ spe
 
 # ===== Add QC Metrics =====
 
-
-
 # get mito genes
 rownames(spe) <- rowData(spe)$gene_name
 is.mito <- grepl("^MT-", rownames(spe))
@@ -115,3 +113,19 @@ spe <- localOutliers(spe, metric = "detected", direction = "lower", log = TRUE)
 spe <- localOutliers(spe, metric = "subsets_mito_percent", direction = "higher", log = TRUE)
 
 saveRDS(spe, here("processed-data", "Visium","breast_cancer","BreastCancer_banksy_spotsweeper.rds"))
+
+
+sessionInfo()
+# other attached packages:
+#  [1] flexmix_2.3-19              lattice_0.22-6             
+#  [3] miQC_1.12.0                 scater_1.32.1              
+#  [5] scran_1.32.0                scuttle_1.14.0             
+#  [7] patchwork_1.2.0             escheR_1.4.0               
+#  [9] ggplot2_3.5.1               spatialLIBD_1.16.2         
+# [11] SpatialExperiment_1.14.0    SingleCellExperiment_1.26.0
+# [13] SummarizedExperiment_1.34.0 Biobase_2.64.0             
+# [15] GenomicRanges_1.56.1        GenomeInfoDb_1.40.1        
+# [17] IRanges_2.38.1              S4Vectors_0.42.1           
+# [19] BiocGenerics_0.50.0         MatrixGenerics_1.16.0      
+# [21] matrixStats_1.3.0           here_1.0.1                 
+# [23] RANN_2.6.1                  SpotSweeper_1.3.1   
