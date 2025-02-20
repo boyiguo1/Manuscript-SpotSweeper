@@ -29,47 +29,25 @@ spe
 
 
 # ========= Spatial outlier detection for Sum UMI =======
-spe <- localOutliers(spe, metric="nCounts", direction="lower", log=TRUE ,n_neighbors=6)
-spe$nCounts_outliers_k6 <- spe$nCounts_outliers
-spe$nCounts_outliers_z_k6 <- spe$nCounts_z
-
-spe <- localOutliers(spe, metric="nCounts", direction="lower", log=TRUE ,n_neighbors=18)
-spe$nCounts_outliers_k18 <- spe$nCounts_outliers
-spe$nCounts_outliers_z_k18 <- spe$nCounts_z
+spe <- localOutliers(spe, metric="nCounts", direction="lower", log=TRUE ,n_neighbors=10)
+spe$nCounts_outliers_k10 <- spe$nCounts_outliers
+spe$nCounts_outliers_z_k10 <- spe$nCounts_z
 
 spe <- localOutliers(spe, metric="nCounts", direction="lower", log=TRUE ,n_neighbors=36)
 spe$nCounts_outliers_k36 <- spe$nCounts_outliers
 spe$nCounts_outliers_z_k36 <- spe$nCounts_z
 
-spe <- localOutliers(spe, metric="nCounts", direction="lower", log=TRUE ,n_neighbors=60)
-spe$nCounts_outliers_k60 <- spe$nCounts_outliers
-spe$nCounts_outliers_z_k60 <- spe$nCounts_z
+spe <- localOutliers(spe, metric="nCounts", direction="lower", log=TRUE ,n_neighbors=50)
+spe$nCounts_outliers_k50 <- spe$nCounts_outliers
+spe$nCounts_outliers_z_k50 <- spe$nCounts_z
 
-spe <- localOutliers(spe, metric="nCounts", direction="lower", log=TRUE ,n_neighbors=90)
-spe$nCounts_outliers_k90 <- spe$nCounts_outliers
-spe$nCounts_outliers_z_k90 <- spe$nCounts_z
+spe <- localOutliers(spe, metric="nCounts", direction="lower", log=TRUE ,n_neighbors=75)
+spe$nCounts_outliers_k75 <- spe$nCounts_outliers
+spe$nCounts_outliers_z_k75 <- spe$nCounts_z
 
-colnames(colData(spe))
-
-table(spe$nCounts_outliers_k6)
-# FALSE  TRUE 
-# 47292   389 
-
-table(spe$nCounts_outliers_k18)
-# FALSE  TRUE 
-# 47539   142 
-
-table(spe$nCounts_outliers_k36)
-# FALSE  TRUE 
-# 47567   114 
-
-table(spe$nCounts_outliers_k60)
-# FALSE  TRUE 
-# 47571   110 
-
-table(spe$nCounts_outliers_k90)
-# FALSE  TRUE 
-# 47564   117 
+spe <- localOutliers(spe, metric="nCounts", direction="lower", log=TRUE ,n_neighbors=100)
+spe$nCounts_outliers_k100 <- spe$nCounts_outliers
+spe$nCounts_outliers_z_k100 <- spe$nCounts_z
 
 
 
@@ -77,7 +55,7 @@ table(spe$nCounts_outliers_k90)
 # ========= Ggplot box plots of average outliers per sample over different K =========
 
 # Color pallete
-color_palette <- c("k6" = "#E41A1C", "k18" = "#377EB8", "k36" = "#4DAF4A", "k60" = "#984EA3", "k90" = "#FF7F00")
+color_palette <- c("k10" = "#E41A1C", "k36" = "#377EB8", "k50" = "#4DAF4A", "k75" = "#984EA3", "k100" = "#FF7F00")
 
 # Calculate the number of outliers per sample_id for each k
 outlier_counts <- colData(spe) %>%
@@ -97,7 +75,7 @@ outlier_counts_long <- outlier_counts %>%
 
 # Reorder K as a factor
 outlier_counts_long <- outlier_counts_long %>%
-  mutate(K = factor(K, levels = c("k6", "k18", "k36", "k60", "k90")))
+  mutate(K = factor(K, levels = c("k10", "k36", "k50", "k75", "k100")))
 
 png(here("plots", "parameter_selection", "knn_selection_xenium", "barplot.png"), unit="in", width=3.5, height=3, res=300)
 ggplot(outlier_counts_long, aes(x = K, y = total_outliers, fill=K)) +
@@ -128,7 +106,7 @@ outliers_per_k <- colData(spe) %>%
 
 # Get reference outliers for K = 36
 reference_outliers <- outliers_per_k %>%
-  filter(nCounts_outliers_k36 == 1) %>%
+  filter(nCounts_outliers_k50 == 1) %>%
   pull(spot)  # Reference spots for K = 36
 
 # Calculate shared and additional spots per sample
@@ -148,11 +126,11 @@ comparison_per_sample <- outliers_per_k %>%
   mutate(
     percent_shared = 100 * shared_spots / total_spots  # Percentage shared
   ) %>%
-  filter(K != "k36")  # Exclude K = 36 from the comparison
+  filter(K != "k50")  # Exclude K = 36 from the comparison
 
 # Reorder K as a factor
 comparison_per_sample <- comparison_per_sample %>%
-  mutate(K = factor(K, levels = c("k6", "k18", "k60", "k90")))
+  mutate(K = factor(K, levels = c("k10", "k36", "k75", "k100")))
 
 # box plot of shared outliers
 png(here("plots", "parameter_selection", "knn_selection_xenium", "overlap.png"), unit="in", width=3, height=3, res=300)
@@ -160,7 +138,7 @@ ggplot(comparison_per_sample, aes(x = K, y = percent_shared, fill=K)) +
   geom_col() + # Boxplot without outlier shapes
   geom_text(aes(label = sprintf("%.1f%%", percent_shared)), vjust = -0.5, size = 2.5) +
   labs(
-    title = "Shared Outliers w/ K=36",
+    title = "Shared Outliers w/ K=50",
     x = "K-nearest neighbors",
     y = "Percentage of Shared Outliers"
   ) +
@@ -176,7 +154,7 @@ ggplot(comparison_per_sample, aes(x = K, y = additional_spots, fill=K)) +
   geom_col() + # Boxplot without outlier shapes
   geom_text(aes(label =  additional_spots), vjust = -0.5, size = 2.5) +
   labs(
-    title = "Additional Outliers to K=36",
+    title = "Additional Outliers",
     x = "K-nearest neighbors",
     y = "Number of Additional Spots"
   ) +
@@ -186,41 +164,6 @@ ggplot(comparison_per_sample, aes(x = K, y = additional_spots, fill=K)) +
   theme(legend.position = "none") 
 dev.off()
 
-
-
-
-# =========== Spot plots ==========
-
-# subset to first sample, unique(spe$sample_id)[1]
-spe_sub <- spe[, spe$sample_id == unique(spe$sample_id)[1]]
-png(here("plots", "parameter_selection", "knn_selection_xenium", "spotplots.png"), unit="in", width=20, height=6, res=300)
-p1 <- plotSpotQC(spe_sub, plot_type = "spot", 
-                 annotate = "nCounts_outliers_k6", point_size = 0.002) +
-                guides(color = "none") +
-                ggtitle("K = 6 (1st order)")
-
-p2 <- plotSpotQC(spe_sub, plot_type = "spot", 
-                 annotate = "nCounts_outliers_k18", point_size = 0.002) +
-                guides(color = "none") +
-                ggtitle("K = 18 (2nd order)")
-
-p3 <- plotSpotQC(spe_sub, plot_type = "spot", 
-                 annotate = "nCounts_outliers_k36", point_size = 0.002) +
-                guides(color = "none") +
-                ggtitle("K = 36 (3rd order)")
-
-p4 <- plotSpotQC(spe_sub, plot_type = "spot", 
-                 annotate = "nCounts_outliers_k60", point_size = 0.002) +
-                guides(color = "none") +
-                ggtitle("K = 60 (4th order)")
-
-p5 <- plotSpotQC(spe_sub, plot_type = "spot", 
-                 annotate = "nCounts_outliers_k90", point_size = 0.002) +
-                guides(color = "none") +
-                ggtitle("K = 90 (5th order)")
-
-p1 | p2 | p3 | p4 | p5
-dev.off()
 
 
 
@@ -248,7 +191,7 @@ z_scores_long <- z_scores %>%
 
 # Reorder K as a factor
 z_scores_long <- z_scores_long %>%
-  mutate(K = factor(K, levels = c("k6", "k18", "k36", "k60", "k90")))
+  mutate(K = factor(K, levels = c("k10", "k36", "k50", "k75", "k100")))
 
 # Plot the cumulative distribution
 png(here("plots", "parameter_selection", "knn_selection_xenium", "cumulative_distribution.png"), unit="in", width=4, height=3, res=300)
@@ -294,25 +237,25 @@ dev.off()
 # ===============================================================
 
 # ======== Detected Genes ========
-spe <- localOutliers(spe, metric="nGenes", direction="lower", log=TRUE ,n_neighbors=6)
-spe$nGenes_outliers_k6 <- spe$nGenes_outliers
-spe$nGenes_z_k6 <- spe$nGenes_z
-
-spe <- localOutliers(spe, metric="nGenes", direction="lower", log=TRUE ,n_neighbors=18)
-spe$nGenes_outliers_k18 <- spe$nGenes_outliers
-spe$nGenes_z_k18 <- spe$nGenes_z
+spe <- localOutliers(spe, metric="nGenes", direction="lower", log=TRUE ,n_neighbors=10)
+spe$nGenes_outliers_k10 <- spe$nGenes_outliers
+spe$nGenes_z_k10 <- spe$nGenes_z
 
 spe <- localOutliers(spe, metric="nGenes", direction="lower", log=TRUE ,n_neighbors=36)
 spe$nGenes_outliers_k36 <- spe$nGenes_outliers
 spe$nGenes_z_k36 <- spe$nGenes_z
 
-spe <- localOutliers(spe, metric="nGenes", direction="lower", log=TRUE ,n_neighbors=60)
-spe$nGenes_outliers_k60 <- spe$nGenes_outliers
-spe$nGenes_z_k60 <- spe$nGenes_z
+spe <- localOutliers(spe, metric="nGenes", direction="lower", log=TRUE ,n_neighbors=50)
+spe$nGenes_outliers_k50 <- spe$nGenes_outliers
+spe$nGenes_z_k50 <- spe$nGenes_z
 
-spe <- localOutliers(spe, metric="nGenes", direction="lower", log=TRUE ,n_neighbors=90)
-spe$nGenes_outliers_k90 <- spe$nGenes_outliers
-spe$nGenes_z_k90 <- spe$nGenes_z
+spe <- localOutliers(spe, metric="nGenes", direction="lower", log=TRUE ,n_neighbors=75)
+spe$nGenes_outliers_k75 <- spe$nGenes_outliers
+spe$nGenes_z_k75 <- spe$nGenes_z
+
+spe <- localOutliers(spe, metric="nGenes", direction="lower", log=TRUE ,n_neighbors=100)
+spe$nGenes_outliers_k100 <- spe$nGenes_outliers
+spe$nGenes_z_k100 <- spe$nGenes_z
 
 # Extract z-scores for each K
 z_scores <- colData(spe) %>%
@@ -335,7 +278,7 @@ z_scores_long <- z_scores %>%
 
 # Reorder K as a factor
 z_scores_long <- z_scores_long %>%
-  mutate(K = factor(K, levels = c("k6", "k18", "k36", "k60", "k90")))
+  mutate(K = factor(K, levels = c("k10", "k36", "k50", "k75", "k100")))
 
 # Plot the cumulative distribution
 png(here("plots", "parameter_selection", "knn_selection_xenium", "cumulative_distribution_genes.png"), unit="in", width=4, height=3, res=300)
@@ -374,10 +317,6 @@ dev.off()
 
 
 
-
-
-
-
 # ==== Sum UMI ====
 
 # extract nCounts for all outliers across Ks
@@ -404,7 +343,7 @@ nCounts_outliers_long <- nCounts_outliers_long %>%
 
 # Reorder K as a factor
 nCounts_outliers_long <- nCounts_outliers_long %>%
-  mutate(K = factor(K, levels = c("k6", "k18", "k36", "k60", "k90")))
+  mutate(K = factor(K, levels = c("k10", "k36", "k50", "k75", "k100")))
 
 # Plot the violin plot
 png(here("plots", "parameter_selection", "knn_selection_xenium", "violin_nCounts.png"), unit="in", width=3, height=3, res=300)
@@ -447,7 +386,7 @@ nGenes_outliers_long <- nGenes_outliers_long %>%
 
 # Reorder K as a factor
 nGenes_outliers_long <- nGenes_outliers_long %>%
-  mutate(K = factor(K, levels = c("k6", "k18", "k36", "k60", "k90")))
+  mutate(K = factor(K, levels = c("k10", "k36", "k50", "k75", "k100")))
 
 # Plot the violin plot
 png(here("plots", "parameter_selection", "knn_selection_xenium", "violin_nGenes.png"), unit="in", width=3, height=3, res=300)
