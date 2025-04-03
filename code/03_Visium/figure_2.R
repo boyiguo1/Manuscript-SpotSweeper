@@ -37,27 +37,6 @@ colnames(colData(spe))
 # [71] "sum_umi_outliers"            "sum_umi_z"    
 
 
-# # consider outliers if theabs(z-score) by dividing 0.6745 is > 3
-# spe$sum_umi_outliers_corrected <- abs(spe$sum_umi_z)*0.6745 > 3
-# spe$sum_gene_outliers_corrected <- abs(spe$sum_gene_z)*0.6745 > 3
-# spe$expr_chrM_ratio_outliers_corrected <- abs(spe$expr_chrM_ratio_z)*0.6745 > 3
-
-
-
-# #subset to first sample
-# spe.subset <- subset(spe, ,sample_id == unique(spe$sample_id)[1])
-# png(here(plot_dir, "Figure2_spotplot_local_umi.png"), width=10, height=5, units="in", res=300)
-# p1 <- make_escheR(spe.subset ) |> 
-#   add_fill(var = "sum_umi_outliers") +
-#   scale_fill_manual(values = c("TRUE" = "red2", "FALSE" = "grey")) 
-
-# p2 <- make_escheR(spe.subset ) |> 
-#   add_fill(var = "sum_umi_outliers_corrected") +
-#   scale_fill_manual(values = c("TRUE" = "red2", "FALSE" = "grey"))
-#   p1+p2
-# dev.off()
-
-
 # ========= Standard outlier detection (MAD) =======
 library(scuttle)
 
@@ -124,14 +103,24 @@ spe <- addPerCellQC(spe, subsets = feature_ctrls)
 
 model <- mixtureModel(spe, model_type = "spline")
 
-png(here(plot_dir, "miQC_mixtureModel.png"), width=4, height=4, units="in", res=300)
-plotModel(spe, model) + ggtitle("Visium DLPFC")
+pdf(here(plot_dir, "miQC_mixtureModel.pdf"), width=4, height=4)
+plotModel(spe, model) 
 dev.off()
 
-png(here(plot_dir, "miQC_mixtureModelFiltering.png"), width=3.5, height=3.5, units="in", res=300)
-plotFiltering(spe, model) + ggtitle("miQC outliers") +
+pdf(here(plot_dir, "miQC_mixtureModelFiltering.pdf"), width=3.5, height=3.5)
+plotFiltering(spe, model) + 
      scale_color_manual(values = c("TRUE" = "grey", "FALSE" = "red"))
 dev.off()
+
+# make df of mito ratio and unique genes
+miQC_df <- data.frame(
+  subsets_mito_percent = spe$subsets_mito_percent,
+  detected = spe$detected
+)
+
+# to CSV
+write.csv(miQC_df, here(processed_dir, "outputs_for_paper", "Figure2_miQC_df.csv"), row.names = FALSE)
+
 
 # NOTE: miQC does not offer a way to simply flag spots, so I'm importing part of the filter function here to do so manually
 library(flexmix)
@@ -276,12 +265,12 @@ p <- ggplot(discarded_long, aes(x = layer_guess_ordered, y = percentage_discarde
   coord_flip()
 
 # Save the plot to PNG
-png(file = here(plot_dir, 'Figure2_boxplot_all_methods_colored.png'), height = 8, width = 4.5, units = "in", res = 300)
+pdf(file = here(plot_dir, 'Figure2_boxplot_all_methods_colored.pdf'), height = 8, width = 4.5)
 print(p)
 dev.off()
 
 # write csv
-write.csv(discarded_df, here(processed_dir,"outputs_for_paper", 'Figure2_boxplots.csv'), row.names = FALSE)
+write.csv(discarded_long, here(processed_dir,"outputs_for_paper", 'Figure2_H.csv'), row.names = FALSE)
 
 
 # ===== Make df of QC metrics across layers =====
@@ -450,6 +439,24 @@ pdf(height = 5, width=5, here(plot_dir, 'Figure2_spotplot_umi_global.pdf'))
 p4
 dev.off()
 
+
+
+
+# make dataframe to export colData and spatialData used in above plots from spe.subset
+
+spotplot_df <- data.frame(
+  sample_id = spe.subset$sample_id,
+  layer_guess_reordered = spe.subset$layer_guess_reordered,
+  sum_gene = spe.subset$sum_gene,
+  qc_gene_threshold = as.logical(spe.subset$qc_gene_threshold),
+  local_outliers = as.logical(spe.subset$local_outliers),
+  discard_mad = as.logical(spe.subset$discard_mad),
+  spatialCoords = spatialCoords(spe.subset)
+)
+
+# save to csv
+write.csv(spotplot_df, here(processed_dir, "outputs_for_paper", "Figure2_spotplots_df.csv"), row.names = FALSE)
+
 # ===== Panel D ======
 
 p <- ggplot(discarded_df, aes(x = layer_guess_ordered, y = percentage_threshold, fill = layer_guess_ordered)) +
@@ -546,8 +553,8 @@ pdf(height = 5, width=5, here(plot_dir, 'Figure2_ridge_gene.pdf'))
 p6
 dev.off()
 
-
-
+# export to csv
+write.csv(qc_df, here(processed_dir, "outputs_for_paper", "Figure2_ridge_plots.csv"), row.names = FALSE)
 
 # ======= Local outlier ridge plots =======
 

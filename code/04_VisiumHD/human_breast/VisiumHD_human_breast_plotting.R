@@ -80,7 +80,7 @@ outlier_df <- outlier_df %>%
 outlier_df$method <- factor(outlier_df$method, levels=c( "miQC", "Threshold", "MAD", "SpotSweeper"))
 
 # bar plot sw vs mad outliers per domain
-png(here(plot_dir, "HD_HumanBreast_outliers_per_domain.png"), width=4.5, height=6, res=300, units="in")
+pdf(here(plot_dir, "HD_HumanBreast_outliers_per_domain.pdf"), width=4.5, height=6)
 ggplot(outlier_df, aes(x=domain, y=count, fill=method)) +
     geom_bar(stat="identity", position="dodge") +
     labs(x="Spatial Domain", y="Number of Outliers", fill="Method") +
@@ -93,7 +93,10 @@ ggplot(outlier_df, aes(x=domain, y=count, fill=method)) +
     coord_flip()
 dev.off()
 
-
+# to csv
+write.csv(outlier_df, 
+          file = here("processed-data", "outputs_for_paper", "figure_4", "Figure4_T.csv"),
+          row.names = FALSE, quote = FALSE)
 
 
 # ============ Spot Plots =============
@@ -104,7 +107,7 @@ domain_pal <- colorRampPalette(RColorBrewer::brewer.pal(n_domains, "Set1"))
 pal <- domain_pal(n_domains)
 
 
-png(here(plot_dir, "HD_HumanBreast_016_BayesSpace_domains.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir, "HD_HumanBreast_016_BayesSpace_domains.pdf"), width=5, height=5)
 make_escheR(spe) |>
     add_fill(var="BS_k10", point_size=.6) +
     scale_fill_manual(values=pal,
@@ -116,7 +119,21 @@ make_escheR(spe) |>
 dev.off()
 
 
-png(here(plot_dir, "HD_HumanBreast_016_sum_3MAD.png"), width=5, height=5, res=300, units="in")
+banksy_df <- data.frame(
+    spatialCoords = spatialCoords(spe),
+    sample_id = colData(spe)$sample_id,
+    annotation = colData(spe)$BS_k10
+)
+
+write.csv(banksy_df, 
+          file = here("processed-data", "outputs_for_paper", "figure_4", "Figure4_E.csv"),
+          row.names = FALSE, quote = FALSE)
+
+
+
+
+
+pdf(here(plot_dir, "HD_HumanBreast_016_sum_3MAD.pdf"), width=5, height=5)
 plotQC(spe, metric="detected", outliers="sum_discard", point_size=0.6, stroke=.8) +
     ggtitle("3 MAD") +
     guides(color = guide_legend(title = "Outlier")) +
@@ -124,7 +141,7 @@ plotQC(spe, metric="detected", outliers="sum_discard", point_size=0.6, stroke=.8
         legend.text = element_text(size=11))
 dev.off()
 
-png(here(plot_dir, "HD_HumanBreast_016_sum_threshold.png"), width=5, height=5, res=300, units="in")
+pdf(here(plot_dir, "HD_HumanBreast_016_sum_threshold.pdf"), width=5, height=5, res=300, units="in")
 plotQC(spe, metric="detected", outliers="sum_threshold", point_size=0.6, stroke=.8) +
     ggtitle("Fixed Threshold") +
     guides(color = guide_legend(title = "Outlier")) +
@@ -132,7 +149,7 @@ plotQC(spe, metric="detected", outliers="sum_threshold", point_size=0.6, stroke=
         legend.text = element_text(size=11))
 dev.off()
 
-png(here(plot_dir, "HD_HumanBreast_016_sum_spotsweeper.png"), width=5, height=5, res=300, units="in")
+pdf(here(plot_dir, "HD_HumanBreast_016_sum_spotsweeper.pdf"), width=5, height=5, res=300, units="in")
 plotQC(spe, metric="detected", outliers="sum_outliers", point_size=0.6, stroke=.8) +
     ggtitle("SpotSweeper") +
     guides(color = guide_legend(title = "Outlier")) +
@@ -157,6 +174,11 @@ outlier_df <- data.frame(MAD=spe$MAD_outliers,
                          subsets_mito_percent_z = spe$subsets_mito_percent_z
                         )
 
+# to csv
+write.csv(outlier_df, 
+          file = here("processed-data", "outputs_for_paper", "figure_4", "Figure4_JO.csv"),
+          row.names = FALSE, quote = FALSE)
+
 
 # Extract the sum values that are marked as outliers
 outliers <- spe$sum[spe$sum_discard]
@@ -178,7 +200,7 @@ domain_pal <- colorRampPalette(RColorBrewer::brewer.pal(n_domains, "Set1"))
 pal <- domain_pal(n_domains)
 
 # ridge plot of sum_umi with a threshold of 500
-png(here(plot_dir, "HD_HumanBreast_016_ridge_sum_umi.png"), width=4, height=6, res=300, units="in")
+pdf(here(plot_dir, "HD_HumanBreast_016_ridge_sum_umi.pdf"), width=4, height=6)
 ggplot(outlier_df, aes(x = sum, y = domain, fill = domain)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
   geom_vline(xintercept = 500, linetype = "dashed", color = "#eb7c69", size=1.75) +
@@ -194,7 +216,7 @@ ggplot(outlier_df, aes(x = sum, y = domain, fill = domain)) +
        y = "Spatial Domain") 
 dev.off()
 
-png(here(plot_dir, "HD_HumanBreast_016_ridge_mito_percent.png"), width=4, height=6, res=300, units="in")
+pdf(here(plot_dir, "HD_HumanBreast_016_ridge_mito_percent.pdf"), width=4, height=6)
 ggplot(outlier_df, aes(x = subsets_mito_percent, y = domain, fill = domain)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
   geom_vline(xintercept = 10, linetype = "dashed", color = "#eb7c69", size=1.75) +
@@ -209,7 +231,7 @@ ggplot(outlier_df, aes(x = subsets_mito_percent, y = domain, fill = domain)) +
        y = "Spatial Domain")
 dev.off()
 
-png(here(plot_dir, "HD_HumanBreast_016_ridge_unique_genes.png"), width=4, height=6, res=300, units="in")
+pdf(here(plot_dir, "HD_HumanBreast_016_ridge_unique_genes.pdf"), width=4, height=6)
 ggplot(outlier_df, aes(x = detected, y = domain, fill = domain)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
   geom_vline(xintercept = 500, linetype = "dashed", color = "#eb7c69", size=1.75) +
@@ -230,7 +252,7 @@ dev.off()
 
 # ===== SpotSweeper ridge plots =====
 # ridge plot of sum_umi with a threshold of 500
-png(here(plot_dir, "HD_HumanBreast_016_ridge_sum_umi_spotsweeper.png"),width=4, height=6, res=300, units="in")
+pdf(here(plot_dir, "HD_HumanBreast_016_ridge_sum_umi_spotsweeper.pdf"),width=4, height=6)
 ggplot(outlier_df, aes(x = sum_z, y = domain, fill = domain)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
   geom_vline(xintercept = -3, linetype = "dashed", color = "#b82ac9", size=1.75) +
@@ -245,7 +267,7 @@ ggplot(outlier_df, aes(x = sum_z, y = domain, fill = domain)) +
        y = "Spatial Domain") 
 dev.off()
 
-png(here(plot_dir, "HD_HumanBreast_016_ridge_mito_percent_spotsweeper.png"), width=4, height=6, res=300, units="in")
+pdf(here(plot_dir, "HD_HumanBreast_016_ridge_mito_percent_spotsweeper.pdf"), width=4)
 ggplot(outlier_df, aes(x = subsets_mito_percent_z, y = domain, fill = domain)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
   geom_vline(xintercept = 3, linetype = "dashed", color = "#b82ac9", size=1.75) +
@@ -259,7 +281,7 @@ ggplot(outlier_df, aes(x = subsets_mito_percent_z, y = domain, fill = domain)) +
        y = "Spatial Domain")
 dev.off()
 
-png(here(plot_dir, "HD_HumanBreast_016_ridge_unique_genes_spotsweeper.png"), width=4, height=6, res=300, units="in")
+pdf(here(plot_dir, "HD_HumanBreast_016_ridge_unique_genes_spotsweeper.pdf"), width=4)
 ggplot(outlier_df, aes(x = detected_z, y = domain, fill = domain)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
   geom_vline(xintercept = -3, linetype = "dashed", color = "#b82ac9", size=1.75) +
@@ -312,7 +334,7 @@ dev.off()
 #   labs(title = "Unique Genes") +
 #   theme(plot.title = element_text(size = 20))
 
-# png(here(plot_dir, 'HD_HumanBreast_016_umap.png'), width=15, height=10, units="in", res=300)
+# pdf(here(plot_dir, 'HD_HumanBreast_016_umap.pdf'), width=15, height=10, units="in", res=300)
 # (p1+p2+p3)/(p4+p5+p6)
 # dev.off()
 

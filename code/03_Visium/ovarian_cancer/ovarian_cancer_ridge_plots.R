@@ -83,7 +83,7 @@ outlier_df <- outlier_df %>%
 outlier_df$method <- factor(outlier_df$method, levels=c( "miQC", "Threshold", "MAD", "SpotSweeper"))
 
 # bar plot sw vs mad outliers per domain
-png(here(plot_dir, "overian_cancer_outliers_per_domain.png"), width=4.5, height=6, res=300, units="in")
+pdf(here(plot_dir, "overian_cancer_outliers_per_domain.pdf"), width=4.5, height=6)
 ggplot(outlier_df, aes(x=domain, y=count, fill=method)) +
     geom_bar(stat="identity", position="dodge") +
     labs(x="Spatial Domain", y="Number of Outliers", fill="Method") +
@@ -95,6 +95,11 @@ ggplot(outlier_df, aes(x=domain, y=count, fill=method)) +
     theme(text = element_text(size=16, face="bold")) +
     coord_flip()
 dev.off()
+
+# to csv
+write.csv(outlier_df, 
+          file = here("processed-data", "outputs_for_paper", "figure_4", "Figure4_Q.csv"),
+          row.names = FALSE, quote = FALSE)
 
 
 
@@ -113,6 +118,10 @@ outlier_df <- data.frame(MAD=spe$MAD_outliers,
                          detected_z = spe$detected_z,
                          subsets_mito_percent_z = spe$subsets_mito_percent_z
                         )
+
+write.csv(outlier_df, 
+          file = here("processed-data", "outputs_for_paper", "figure_4", "Figure4_GL.csv"),
+          row.names = FALSE, quote = FALSE)
 
 
 # Extract the sum values that are marked as outliers
@@ -135,7 +144,7 @@ pal <- domain_pal(n_domains)
 
 library(ggridges)
 # ridge plot of sum_umi with a threshold of 500
-png(here(plot_dir, "ovarian_cancer_ridge_sum_umi.png"), width=4, height=6, res=300, units="in")
+pdf(here(plot_dir, "ovarian_cancer_ridge_sum_umi.pdf"), width=4, height=6)
 ggplot(outlier_df, aes(x = sum, y = domain, fill = domain)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
   geom_vline(xintercept = 500, linetype = "dashed", color = "#eb7c69", size=1.75) +
@@ -151,7 +160,7 @@ ggplot(outlier_df, aes(x = sum, y = domain, fill = domain)) +
        y = "Spatial Domain")
 dev.off()
 
-png(here(plot_dir, "ovarian_cancer_ridge_mito_percent.png"), width=4, height=6, res=300, units="in")
+pdf(here(plot_dir, "ovarian_cancer_ridge_mito_percent.pdf"), width=4, height=6)
 ggplot(outlier_df, aes(x = subsets_mito_percent, y = domain, fill = domain)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
   geom_vline(xintercept = 10, linetype = "dashed", color = "#eb7c69", size=1.75) +
@@ -167,7 +176,7 @@ ggplot(outlier_df, aes(x = subsets_mito_percent, y = domain, fill = domain)) +
   #coord_cartesian(xlim = c(NA, 2))
 dev.off()
 
-png(here(plot_dir, "ovarian_cancer_ridge_unique_genes.png"), width=4, height=6, res=300, units="in")
+pdf(here(plot_dir, "ovarian_cancer_ridge_unique_genes.pdf"), width=4, height=6)
 ggplot(outlier_df, aes(x = detected, y = domain, fill = domain)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
   geom_vline(xintercept = 500, linetype = "dashed", color = "#eb7c69", size=1.75) +
@@ -189,7 +198,7 @@ dev.off()
 
 # ===== SpotSweeper ridge plots =====
 # ridge plot of sum_umi with a threshold of 500
-png(here(plot_dir, "ovarian_cancer_ridge_sum_umi_spotsweeper.png"), width=4, height=6, res=300, units="in")
+pdf(here(plot_dir, "ovarian_cancer_ridge_sum_umi_spotsweeper.pdf"), width=4, height=6)
 ggplot(outlier_df, aes(x = sum_z, y = domain, fill = domain)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
   geom_vline(xintercept = -3, linetype = "dashed", color = "#b82ac9", size=1.75) +
@@ -204,7 +213,7 @@ ggplot(outlier_df, aes(x = sum_z, y = domain, fill = domain)) +
        y = "Spatial Domain") 
 dev.off()
 
-png(here(plot_dir, "ovarian_cancer_ridge_mito_percent_spotsweeper.png"), width=4, height=6, res=300, units="in")
+pdf(here(plot_dir, "ovarian_cancer_ridge_mito_percent_spotsweeper.pdf"), width=4, height=6)
 ggplot(outlier_df, aes(x = subsets_mito_percent_z, y = domain, fill = domain)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
   geom_vline(xintercept = 3, linetype = "dashed", color = "#b82ac9", size=1.75) +
@@ -218,7 +227,7 @@ ggplot(outlier_df, aes(x = subsets_mito_percent_z, y = domain, fill = domain)) +
        y = "Spatial Domain")
 dev.off()
 
-png(here(plot_dir, "ovarian_cancer_ridge_unique_genes_spotsweeper.png"), width=4, height=6, res=300, units="in")
+pdf(here(plot_dir, "ovarian_cancer_ridge_unique_genes_spotsweeper.pdf"), width=4, height=6)
 ggplot(outlier_df, aes(x = detected_z, y = domain, fill = domain)) +
   geom_density_ridges(alpha = 0.8, scale = 1.5) +
   geom_vline(xintercept = -3, linetype = "dashed", color = "#b82ac9", size=1.75) +

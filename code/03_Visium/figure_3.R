@@ -6,8 +6,6 @@ library(spatialLIBD)
 library(ggspavis)
 library(BiocNeighbors)
 library(escheR)
-library(patchwork)
-library(tictoc)
 library(dplyr)
 library(tidyr)
 library(scran)
@@ -15,6 +13,7 @@ library(scater)
 library(ggridges)
 library(escheR)
 library(STexampleData)
+library(patchwork)
 
 #library(ExperimentHub)
 
@@ -25,7 +24,7 @@ library(STexampleData)
 
 
 
-plot_dir = here('plots',"figure_3")
+plot_dir = here('plots',"Visium","figure_3")
 processed_dir = here('processed-data')
 
 # example mouse data from 10x
@@ -56,7 +55,7 @@ spe.mouse
 
 
 # n=30 DLFPC
-load(here("raw-data","dlPFC_raw.RData"))
+load(here("raw-data","dlPFC_raw.Rdata"))
 spe.pfc <- spe_raw
 colnames(colData(spe.pfc))
 # [1] "sample_id"              "in_tissue"              "array_row"              "array_col"
@@ -103,8 +102,6 @@ spe.maynard <- spe.maynard[,colData(spe.maynard)$in_tissue == TRUE]
 
 
 # ======== Local Outlier detection =========
-
-# ===== Find
 
 # === PFC ===
 spe.pfc <- localOutliers(spe.pfc,
@@ -252,9 +249,14 @@ p <- ggplot(spots_in_multiple_samples, aes(x = group, y = samples)) +
   theme(text=element_text(size=18),
         axis.text=element_text(size=17))
 
-png(here(plot_dir, "Repeat_outliers_boxplot_3z.png"), width=5, height=5.5, units="in", res=300)
+pdf(here(plot_dir, "Repeat_outliers_boxplot_3z.pdf"), width=5, height=5.5)
 p
 dev.off()
+
+# save to cvs
+write.csv(spots_in_multiple_samples, 
+          here(processed_dir,"outputs_for_paper","figure_3", "figure3_C.csv"), 
+          row.names = FALSE)
 
 
 # get row and col for spots with counts > 20 samples
@@ -297,16 +299,16 @@ spe.maynard$barcode <- sapply(strsplit(spe.maynard$key, "-"), "[[", 1)
 spe.maynard$barcode <- sapply(strsplit(spe.maynard$barcode, "_"), "[[", 2)
 
 # spot plots of bad spots
-png(here(plot_dir, "Spotplot_badSpots_Maynard.png"), width=4.5, height=5, units="in", res=300)
+pdf(here(plot_dir, "Spotplot_badSpots_Maynard.pdf"), width=4.5, height=5)
 p1 <- SpotSweeper::plotQC(spe.maynard, metric="sum_umi_log",outliers="biased_spots",
                           point_size=1.65) +
-  ggtitle("DLFPC (Maynard et al)") +
+  ggtitle("DLPFC (Maynard et al)") +
   guides(color = guide_legend(title = "Low quality")) +
   theme(text=element_text(size=15))
 p1
 dev.off()
 
-png(here(plot_dir, "Spotplot_badSpots_PFC.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir, "Spotplot_badSpots_PFC.pdf"), width=5, height=5)
 p2 <- SpotSweeper::plotQC(spe.pfc, metric="sum_umi_log",outliers="biased_spots",
                           point_size=1.8) +
   ggtitle("DLPFC (Huuki-Myers et al)") +
@@ -321,7 +323,7 @@ dev.off()
 colData(spe.mouse) <- colData(spe.mouse)[, !duplicated(colnames(colData(spe.mouse)))]
 
 
-png(here(plot_dir, "Spotplot_badSpots_Mouse.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir, "Spotplot_badSpots_Mouse.pdf"), width=5, height=5)
 p3 <- SpotSweeper::plotQC(spe.mouse, metric="sum_umi_log",outliers="biased_spots",
                           point_size=2.4) +
   ggtitle("Mouse Coronal (10x Genomics)") +
@@ -330,6 +332,47 @@ p3 <- SpotSweeper::plotQC(spe.mouse, metric="sum_umi_log",outliers="biased_spots
 p3
 dev.off()
 
+
+# output csv of the spot plotdata
+pfc_df <- data.frame(
+  row = spe.pfc$array_row,
+  col = spe.pfc$array_col,
+  biased_spots = as.logical(spe.pfc$biased_spots),
+  barcode = spe.pfc$barcode,
+  sample_id = spe.pfc$sample_id,
+  sum_umi_log = spe.pfc$sum_umi_log
+)
+
+maynard_df <- data.frame(
+  row = spe.maynard$array_row,
+  col = spe.maynard$array_col,
+  biased_spots = as.logical(spe.maynard$biased_spots),
+  barcode = spe.maynard$barcode,
+  sample_id = spe.maynard$sample_id,
+  sum_umi_log = spe.maynard$sum_umi_log
+)
+
+mouse_df <- data.frame(
+  row = spe.mouse$array_row,
+  col = spe.mouse$array_col,
+  biased_spots = as.logical(spe.mouse$biased_spots),
+  barcode = spe.mouse$barcode,
+  sample_id = spe.mouse$sample_id,
+  sum_umi_log = spe.mouse$sum_umi_log
+)
+
+# join a new column, dataset
+pfc_df$dataset <- "Huuki-Myers"
+maynard_df$dataset <- "Maynard"
+mouse_df$dataset <- "Mouse Coronal"
+
+# combine all dataframes
+all_bad_spots_df <- rbind(pfc_df, maynard_df, mouse_df)
+
+# save
+write.csv(all_bad_spots_df, 
+          here(processed_dir, "outputs_for_paper", "figure_3", "Figure3_A.csv"), 
+          row.names = FALSE)
 
 
 
@@ -376,7 +419,7 @@ p3 <- plotColData(spe.mouse, x="biased_spots",y="sum_umi", color_by="sample_id")
   # rename
 
 
-png(here(plot_dir, "bad_spots_sum_umi.png"), width=15, height=5, units="in", res=300)
+pdf(here(plot_dir, "bad_spots_sum_umi.pdf"), width=15, height=5)
 (p1+p2+p3)
 dev.off()
 
@@ -403,7 +446,7 @@ p3 <- plotColData(spe.mouse, x="biased_spots",y="sum_gene", color_by="sample_id"
         text=element_text(size=15),
         axis.text=element_text(size=15))
 
-png(here(plot_dir, "bad_spots_sum_gene.png"), width=15, height=5, units="in", res=300)
+pdf(here(plot_dir, "bad_spots_sum_gene.pdf"), width=15, height=5)
 (p1+p2+p3)
 dev.off()
 
@@ -430,13 +473,13 @@ p3 <- plotColData(spe.mouse, x="biased_spots",y="expr_chrM_ratio", color_by="sam
         text=element_text(size=15),
         axis.text=element_text(size=15))
 
-png(here(plot_dir, "bad_spots_mito_ratio.png"), width=15, height=5, units="in", res=300)
+pdf(here(plot_dir, "bad_spots_mito_ratio.pdf"), width=15, height=5)
 (p1+p2+p3)
 dev.off()
 
 
 # z-score of bad spots
-p1 <- plotColData(spe.maynard, x="biased_spots",y="sum_umi_z", color_by="sum_umi_low") +
+p1 <- plotColData(spe.maynard, x="biased_spots",y="sum_umi_z", color_by="sum_umi_low", point_size=1) +
   ggtitle("Maynard et al.")+
   labs(y="Local z-score",
        x="Consistent outliers") +
@@ -446,7 +489,7 @@ p1 <- plotColData(spe.maynard, x="biased_spots",y="sum_umi_z", color_by="sum_umi
         plot.title = element_text(face="plain")) +
   scale_color_manual(values = c("grey", "red"))
 
-p2 <- plotColData(spe.pfc, x="biased_spots",y="sum_umi_z", color_by="sum_umi_low") +
+p2 <- plotColData(spe.pfc, x="biased_spots",y="sum_umi_z", color_by="sum_umi_low", point_size=1) +
   ggtitle("Huuki-Myers et al.") +
   labs(y="Local z-score",
        x="Consistent outliers") +
@@ -457,7 +500,7 @@ p2 <- plotColData(spe.pfc, x="biased_spots",y="sum_umi_z", color_by="sum_umi_low
   scale_color_manual(values = c("grey", "red"))
 
 
-p3 <- plotColData(spe.mouse, x="biased_spots",y="sum_umi_z", color_by="sum_umi_low") +
+p3 <- plotColData(spe.mouse, x="biased_spots",y="sum_umi_z", color_by="sum_umi_low", point_size=1) +
   ggtitle("Mouse Coronal") +
   labs(y="Local z-score",
        x="Consistent outliers") +
@@ -468,9 +511,51 @@ p3 <- plotColData(spe.mouse, x="biased_spots",y="sum_umi_z", color_by="sum_umi_l
       plot.title = element_text(face="plain"))
 
 
-png(here(plot_dir, "bad_spots_z.png"), width=15, height=5, units="in", res=300)
+pdf(here(plot_dir, "bad_spots_z.pdf"), width=15, height=5)
 (p1+p2+p3)
 dev.off()
+
+
+# export z-score data plotted above
+maynard_z_df <- data.frame(
+  biased_spots = as.logical(spe.maynard$biased_spots),
+  barcode = spe.maynard$barcode,
+  sample_id = spe.maynard$sample_id,
+  sum_umi_z = spe.maynard$sum_umi_z,
+  sum_umi_low = as.logical(spe.maynard$sum_umi_low)
+)
+
+pfc_z_df <- data.frame(
+  biased_spots = as.logical(spe.pfc$biased_spots),
+  barcode = spe.pfc$barcode,
+  sample_id = spe.pfc$sample_id,
+  sum_umi_z = spe.pfc$sum_umi_z,
+  sum_umi_low = as.logical(spe.pfc$sum_umi_low)
+)
+
+mouse_z_df <- data.frame(
+  biased_spots = as.logical(spe.mouse$biased_spots),
+  barcode = spe.mouse$barcode,
+  sample_id = spe.mouse$sample_id,
+  sum_umi_z = spe.mouse$sum_umi_z,
+  sum_umi_low = as.logical(spe.mouse$sum_umi_low)
+)
+
+
+
+# combine all dataframes on dataset coldata
+maynard_z_df$dataset <- "Maynard"
+pfc_z_df$dataset <- "Huuki-Myers"
+mouse_z_df$dataset <- "Mouse Coronal"
+all_z_df <- rbind(maynard_z_df, pfc_z_df, mouse_z_df)
+
+# save to csv
+write.csv(all_z_df, 
+          here(processed_dir, "outputs_for_paper", "figure_3", "Figure3_B.csv"), 
+          row.names = FALSE)
+
+
+
 
 # =======================================
 # K-mer analysis of bad barcodes
@@ -522,8 +607,8 @@ p1 <- ggplot(barcode_counts_avg, aes(x = row, y = mean)) +
         text=element_text(size=20))
 
 
-png(here(plot_dir, "barcode_read_count_ranked.png"), width=5, height=5, units="in", res=300)
-p1sq
+pdf(here(plot_dir, "barcode_read_count_ranked.pdf"), width=5, height=5)
+p1
 dev.off()
 
 # get the top 10 and bottom 10 barcodes
@@ -650,7 +735,7 @@ p4 <- ggplot(barcode_counts_avg, aes(x = g_content, y = mean)) +
   #trend line
   geom_smooth(method = "lm")
 
-png(here(plot_dir, "atcg_correlations.png"), width=10, height=10, units="in", res=300)
+pdf(here(plot_dir, "atcg_correlations.pdf"), width=10, height=10)
 (p1+p2)/(p3+p4)
 dev.off()
 
@@ -710,7 +795,7 @@ p4 <- ggplot(g_df, aes(x = group, y = g_content, fill=group)) +
   ggtitle("G content") +
   labs(x = "Group", y = "G content (%)")
 
-png(here(plot_dir, "atcg_boxplot.png"), width=10, height=10, units="in", res=300)
+pdf(here(plot_dir, "atcg_boxplot.pdf"), width=10, height=10)
 (p1+p2)/(p3+p4)
 dev.off()
 
@@ -784,6 +869,7 @@ barcode_counts_avg$biased_spots <- barcode_counts_avg$barcode %in% bad_barcodes
 
 # ================  differential kmer analysis ==============
 library(Biostrings)
+library(EnhancedVolcano)
 
 compute_kmers <- function(dss, k) {
   oligonucleotideFrequency(dss, k)
@@ -844,7 +930,7 @@ logcounts(sce.subset) <- counts(sce.subset)
 markers <- scran::findMarkers(sce.subset, groups = sce.subset$top_barcodes, test.type="binom")
 Bottom_markers <- markers[[1]]
 
-png(here(plot_dir, "kmer_volcano_k4_binom.png"), width=5, height=7, units="in", res=300)
+pdf(here(plot_dir, "kmer_volcano_k4_binom.pdf"), width=5, height=7)
 EnhancedVolcano(Bottom_markers, lab=rownames(Bottom_markers), x='logFC.Top', y='p.value',
                 pCutoff = 0.05,
                 FCcutoff = 1) +
@@ -856,7 +942,7 @@ dev.off()
 # DE using scran findMarkers - t-test
 markers <- scran::findMarkers(sce.subset, groups = sce.subset$top_barcodes, test.type="t")
 Bottom_markers <- markers[[1]]
-png(here(plot_dir, "kmer_volcano_k4_t.png"), width=5, height=7, units="in", res=300)
+pdf(here(plot_dir, "kmer_volcano_k4_t.pdf"), width=5, height=7)
 EnhancedVolcano(Bottom_markers, lab=rownames(Bottom_markers), x='logFC.Top', y='p.value',
                 pCutoff = 0.05,
                 FCcutoff = .5,
@@ -874,6 +960,11 @@ EnhancedVolcano(Bottom_markers, lab=rownames(Bottom_markers), x='logFC.Top', y='
   theme(text=element_text(size=20),
         plot.title=element_text(face="plain"))
 dev.off()
+
+# save as csv
+write.csv(Bottom_markers, 
+          here(processed_dir, "outputs_for_paper", "figure_3", "Figure3_E.csv"), 
+          row.names = TRUE)
 
 # get markers < pval .05
 Bottom_markers_sig <- Bottom_markers[Bottom_markers$p.value < .05,]
@@ -904,28 +995,28 @@ markers.kmer4 <- scran::findMarkers(sce.kmer4, groups = sce.kmer4$top_barcodes)
 markers.kmer4[[1]]
 
 # volcano plots
-png(here(plot_dir, "kmer1_volcano.png"), width=5, height=7, units="in", res=300)
+pdf(here(plot_dir, "kmer1_volcano.pdf"), width=5, height=7)
 EnhancedVolcano(markers.kmer1[[1]], lab=rownames(markers.kmer1[[1]]), x='logFC.Top', y='FDR',
                 pCutoff=.01,
                 FCcutoff = .5)+
   ylab("-Log10P (FDR)")
 dev.off()
 
-png(here(plot_dir, "kmer2_volcano.png"), width=5, height=7, units="in", res=300)
+pdf(here(plot_dir, "kmer2_volcano.pdf"), width=5, height=7)
 EnhancedVolcano(markers.kmer2[[1]], lab=rownames(markers.kmer2[[1]]), x='logFC.Top', y='FDR',
                 pCutoff=.01,
                 FCcutoff = .5) +
   ylab("-Log10P (FDR)")
 dev.off()
 
-png(here(plot_dir, "kmer3_volcano.png"), width=5, height=7, units="in", res=300)
+pdf(here(plot_dir, "kmer3_volcano.pdf"), width=5, height=7)
 EnhancedVolcano(markers.kmer3[[1]], lab=rownames(markers.kmer3[[1]]), x='logFC.Top', y='FDR',
                 pCutoff=.01,
                 FCcutoff = .5)+
   ylab("-Log10P (FDR)")
 dev.off()
 
-png(here(plot_dir, "kmer4_volcano.png"), width=5, height=7, units="in", res=300)
+pdf(here(plot_dir, "kmer4_volcano.pdf"), width=5, height=7)
 EnhancedVolcano(markers.kmer4[[1]], lab=rownames(markers.kmer4[[1]]), x='logFC.Top', y='p.value',
                 pCutoff=.01,
                 FCcutoff = .5)+
@@ -942,7 +1033,7 @@ library(RColorBrewer)
 sce.subset.sig <- sce.subset[rownames(Bottom_markers_sig),]
 sce.subset.sig$barcodes <- sce.subset.sig$top_barcodes
 
-png(here(plot_dir, "kmer_sig_heatmap.png"), width=7, height=4.5, units="in", res=300)
+pdf(here(plot_dir, "kmer_sig_heatmap.pdf"), width=7, height=4.5)
 p <- plotHeatmap(sce.subset.sig, features=unique(rownames(sce.subset.sig)),
             #group="top_barcodes",
             assay="counts",
@@ -986,7 +1077,7 @@ col_annotation <- HeatmapAnnotation(
 )
 
 # Generate the heatmap with ComplexHeatmap
-png(here(plot_dir, "kmer_sig_heatmap.png"), width=7, height=4.5, units="in", res=300)
+pdf(here(plot_dir, "kmer_sig_heatmap.pdf"), width=7, height=4.5)
 
 ht <- Heatmap(centered_scaled_matrix,
         name = "K-mer counts\n(centered and scaled)",
@@ -1019,7 +1110,7 @@ barcode_counts_avg$sequence <- "other"
 combined_barcodes <- rbind(AAA_barcodes, CGT_barcodes, barcode_counts_avg)
 
 # box plots
-png(here(plot_dir, "AAC_GTGT_boxplot.png"), width=8, height=8, units="in", res=300)
+pdf(here(plot_dir, "AAC_GTGT_boxplot.pdf"), width=8, height=8)
 ggplot(combined_barcodes, aes(x = sequence, y = mean, fill=sequence)) +
   geom_point(position = position_jitterdodge()) +
   geom_boxplot() +
@@ -1032,7 +1123,7 @@ ggplot(combined_barcodes, aes(x = sequence, y = mean, fill=sequence)) +
   scale_fill_manual(values=c("firebrick1",  "dodgerblue", "grey"))
 dev.off()
 
-png(here(plot_dir, "AAC_GTGT_violin.png"), width=8, height=8, units="in", res=300)
+pdf(here(plot_dir, "AAC_GTGT_violin.pdf"), width=8, height=8)
 ggplot(combined_barcodes, aes(x = sequence, y = mean, fill=sequence)) +
   geom_violin(aes(fill = sequence)) +
   scale_fill_manual(values=c("firebrick1",  "dodgerblue", "grey")) +
@@ -1045,7 +1136,21 @@ ggplot(combined_barcodes, aes(x = sequence, y = mean, fill=sequence)) +
         plot.title = element_text(size=28))
 dev.off()
 
+# save to csv
+write.csv(combined_barcodes, 
+          here(processed_dir, "outputs_for_paper", "figure_3", "Figure3_F.csv"), 
+          row.names = FALSE)
 
+# get median and interquartile ranges
+
+# get n per group
+combined_barcodes %>%
+  group_by(sequence) %>%
+  summarize(n = n())
+#   sequence     n
+# 1 AAC       1059
+# 2 GTGT       226
+# 3 other     4992
 
 
 # figuring out which barcode goes to which spot
@@ -1074,7 +1179,7 @@ p <- ggplot(biased_spots, aes(x = col, y = row, color = barcodes)) +
         plot.title = element_text(size=28)) +
   scale_color_manual(values = c("red", "blue", "green", "purple", "orange", "black"))
 
-png(here(plot_dir, "BadSpots_scatter_color_by_barcode.png"), width=10, height=6, units="in", res=300)
+pdf(here(plot_dir, "BadSpots_scatter_color_by_barcode.pdf"), width=10, height=6)
 p
 dev.off()
 

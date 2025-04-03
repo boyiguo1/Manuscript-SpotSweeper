@@ -140,7 +140,7 @@ dev.off()
 saveRDS(spe, file = here(processed_dir, 'figure_2', "spe_spotsweeper_precast.rds"))
 
 # load
-
+spe <- readRDS(here(processed_dir, 'figure_2', "spe_spotsweeper_precast.rds"))
 
 
 
@@ -205,7 +205,7 @@ average_percent_neighbors$method <- factor(average_percent_neighbors$method, lev
 # Generate boxplots using ggplot2
 library(ggplot2)
 
-png(here(plot_dir, "figure_2_downstream_2.png"), width = 7, height = 3, units = 'in', res = 300)
+pdf(here(plot_dir, "figure_2_downstream_2.pdf"), width = 7, height = 3)
 ggplot(average_percent_neighbors, aes(x = local_outliers, y = avg_percent_neighbors, fill = local_outliers)) +
     geom_boxplot() +
     geom_jitter() +

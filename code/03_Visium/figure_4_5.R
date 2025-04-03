@@ -56,12 +56,12 @@ plotHistology <- function(spe, sample_id) {
 
 # ==== histology ====
 
-png(here(plot_dir,"dryspot_histology.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"dryspot_histology.pdf"), width=5, height=5)
 p1 <- plotHistology(spe.pfc, "Br3942_mid")
 p1
 dev.off()
 
-png(here(plot_dir,"hangnail_histology.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"hangnail_histology.pdf"), width=5, height=5)
 p2 <- plotHistology(spe.pfc, "Br8325_ant")
 p2
 dev.off()
@@ -74,7 +74,7 @@ spe.pfc$sum_gene_log <- log2(spe.pfc$sum_gene)
 spe.dryspot <- spe.pfc[,colData(spe.pfc)$sample_id == "Br3942_mid"]
 spe.hangnail <- spe.pfc[,colData(spe.pfc)$sample_id == "Br8325_ant"]
 
-png(here(plot_dir, "dryspot_library_size.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir, "dryspot_library_size.pdf"), width=5, height=5)
 p3 <- SpotSweeper::plotQC(spe.dryspot, metric="sum_umi_log",point_size=2.1) +
   ggtitle("Library size") +
   theme(text=element_text(size=18),
@@ -86,7 +86,7 @@ p3 <- SpotSweeper::plotQC(spe.dryspot, metric="sum_umi_log",point_size=2.1) +
 p3
 dev.off()
 
-png(here(plot_dir,"hangnail_library_size.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"hangnail_library_size.pdf"), width=5, height=5)
 p4 <- SpotSweeper::plotQC(spe.hangnail, metric="sum_umi_log",point_size=2.1) +
   ggtitle("Library size") +
   theme(text=element_text(size=18),
@@ -98,11 +98,28 @@ p4 <- SpotSweeper::plotQC(spe.hangnail, metric="sum_umi_log",point_size=2.1) +
 p4
 dev.off()
 
+# make dataframe of library size with spatalCoords an export to csv
+hangnail_df <- data.frame(
+  sample_id = colData(spe.hangnail)$sample_id,
+  sum_umi = colData(spe.hangnail)$sum_umi,
+  row = colData(spe.hangnail)$array_row,
+  col = colData(spe.hangnail)$array_col
+)
 
+dryspot_df <- data.frame(
+  sample_id = colData(spe.dryspot)$sample_id,
+  sum_umi = colData(spe.dryspot)$sum_umi,
+  row = colData(spe.dryspot)$array_row,
+  col = colData(spe.dryspot)$array_col
+)
+
+# Export to CSV
+write.csv(dryspot_df, file=here("processed-data", "outputs_for_paper", "figure_5", "Figure5_D.csv"), row.names = FALSE)
+write.csv(hangnail_df, file=here("processed-data", "outputs_for_paper", "figure_5", "Figure5_I.csv"), row.names = FALSE)
 
 # ==== unique genes ====
 
-png(here(plot_dir, "dryspot_unique_genes.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir, "dryspot_unique_genes.pdf"), width=5, height=5)
 p3 <- SpotSweeper::plotQC(spe.dryspot, metric="sum_gene_log",point_size=2.1) +
   ggtitle("Unique Genes") +
   theme(text=element_text(size=18),
@@ -114,7 +131,7 @@ p3 <- SpotSweeper::plotQC(spe.dryspot, metric="sum_gene_log",point_size=2.1) +
 p3
 dev.off()
 
-png(here(plot_dir,"hangnail_unique_genes.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"hangnail_unique_genes.pdf"), width=5, height=5)
 p4 <- SpotSweeper::plotQC(spe.hangnail, metric="sum_gene_log",point_size=2.1) +
   ggtitle("Unique Genes") +
   theme(text=element_text(size=18),
@@ -129,7 +146,7 @@ dev.off()
 
 # ==== mito percent ====
 
-png(here(plot_dir, "dryspot_mito_ratio.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir, "dryspot_mito_ratio.pdf"), width=5, height=5)
 p3 <- SpotSweeper::plotQC(spe.dryspot, metric="expr_chrM_ratio",point_size=2.1) +
   ggtitle("Mito Ratio") +
   theme(text=element_text(size=18),
@@ -142,7 +159,7 @@ p3 <- SpotSweeper::plotQC(spe.dryspot, metric="expr_chrM_ratio",point_size=2.1) 
 p3
 dev.off()
 
-png(here(plot_dir,"hangnail_mito_ratio.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"hangnail_mito_ratio.pdf"), width=5, height=5)
 p4 <- SpotSweeper::plotQC(spe.hangnail, metric="expr_chrM_ratio", point_size=2.1) +
   ggtitle("Mito Ratio") +
   theme(text=element_text(size=18),
@@ -154,6 +171,25 @@ p4 <- SpotSweeper::plotQC(spe.hangnail, metric="expr_chrM_ratio", point_size=2.1
 p4
 dev.off()
 
+
+# make dataframe of library size with spatalCoords an export to csv
+hangnail_df <- data.frame(
+  sample_id = colData(spe.hangnail)$sample_id,
+  mito_ratio = colData(spe.hangnail)$expr_chrM_ratio,
+  row = colData(spe.hangnail)$array_row,
+  col = colData(spe.hangnail)$array_col
+)
+
+dryspot_df <- data.frame(
+  sample_id = colData(spe.dryspot)$sample_id,
+  mito_ratio = colData(spe.dryspot)$expr_chrM_ratio,
+  row = colData(spe.dryspot)$array_row,
+  col = colData(spe.dryspot)$array_col
+)
+
+# Export to CSV
+write.csv(dryspot_df, file=here("processed-data", "outputs_for_paper", "figure_5", "Figure5_E.csv"), row.names = FALSE)
+write.csv(hangnail_df, file=here("processed-data", "outputs_for_paper", "figure_5", "Figure5_J.csv"), row.names = FALSE)
 
 # ========================================
 #             Clustering
@@ -186,7 +222,7 @@ colData(spe.dryspot)$col <- spe.dryspot$array_col
 metadata(spe.dryspot)$BayesSpace.data <- list(platform = "Visium", is.enhanced = FALSE)
 
 d <- 15  # Number of PCs
-
+[
 ## Run BayesSpace clustering
 set.seed(104)
 dlpfc <- spatialCluster(spe.dryspot, q=2, d=d, platform='Visium',
@@ -197,10 +233,10 @@ dlpfc <- spatialCluster(spe.dryspot, q=7, d=d, platform='Visium',
                         nrep=10000, gamma=3, save.chain=TRUE)
 spe.dryspot$BS_k7 <- as.factor(dlpfc$spatial.cluster)
 
-library(ggsci)
+library(ggsci)]
 
 
-png(here(plot_dir,"dryspot_clustering.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"dryspot_clustering.pdf"), width=5, height=5)
 p <- make_escheR(spe.dryspot) |>
   add_fill("BS_k7") +
   ggtitle("BayesSpace k=7") +
@@ -211,6 +247,17 @@ p <- make_escheR(spe.dryspot) |>
   scale_fill_manual(values=colors)
 p
 dev.off()
+
+# to csv
+dryspot_df <- data.frame(
+  sample_id = colData(spe.dryspot)$sample_id,
+  BS_k7 = as.character(colData(spe.dryspot)$BS_k7),
+  row = colData(spe.dryspot)$array_row,
+  col = colData(spe.dryspot)$array_col
+)
+
+# Export to CSV
+write.csv(dryspot_df, file=here("processed-data", "outputs_for_paper", "figure_5", "Figure5_F.csv"), row.names = FALSE)
 
 
 # ===== BS clustering of the hangnail samples ======
@@ -245,7 +292,7 @@ dlpfc <- spatialCluster(spe.hangnail, q=7, d=d, platform='Visium',
 
 spe.hangnail$BS_k7 <- as.factor(dlpfc$spatial.cluster)
 
-png(here(plot_dir,"hangnail_BayesSpace_k7.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"hangnail_BayesSpace_k7.pdf"), width=5, height=5)
 p1 <- make_escheR(spe.hangnail) |>
   add_fill("BS_k7") +
   ggtitle("BayesSpace k=7") +
@@ -258,6 +305,17 @@ p1 <- make_escheR(spe.hangnail) |>
 
 p1
 dev.off()
+
+# to csv
+hangnail_df <- data.frame(
+  sample_id = colData(spe.hangnail)$sample_id,
+  BS_k7 = as.character(colData(spe.hangnail)$BS_k7),
+  row = colData(spe.hangnail)$array_row,
+  col = colData(spe.hangnail)$array_col
+)
+
+# Export to CSV
+write.csv(hangnail_df, file=here("processed-data", "outputs_for_paper", "figure_5", "Figure5_K.csv"), row.names = FALSE)
 
 
 # ========= Dry-spot artifact ==========
@@ -292,7 +350,7 @@ p1 <- make_escheR(spe.dryspot) |>
   scale_fill_manual(values=c("grey", "red"),
                     name="Discard")
 
-png(here(plot_dir,"dryspot_dbscan_spotplots.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"dryspot_dbscan_spotplots.pdf"), width=5, height=5)
 p1
 dev.off()
 
@@ -302,7 +360,7 @@ df <- data.frame(umi=log2(spe.dryspot$sum_umi),
                 cluster=spe.dryspot$DBSCAN_artifact)
 
 #ggplot of x colored by clusters
-png(here(plot_dir,"dryspot_dbscan_scatter.png"), width=6, height=5, units="in", res=300)
+pdf(here(plot_dir,"dryspot_dbscan_scatter.pdf"), width=6, height=5)
 p <- ggplot(df, aes(x=umi, y=gene, color=cluster)) +
   geom_point(alpha=.2) +
   scale_color_manual(values=c("grey", "red"),
@@ -318,6 +376,20 @@ p <- ggplot(df, aes(x=umi, y=gene, color=cluster)) +
 p
 dev.off()
 
+# to csv
+write.csv(df, file=here("processed-data", "outputs_for_paper", "figure_6", "Figure6_B.csv"), row.names = FALSE)
+
+# add spatialCoords and export
+dryspot_df <- data.frame(
+  sample_id = colData(spe.dryspot)$sample_id,
+  DBSCAN_artifact = as.character(colData(spe.dryspot)$DBSCAN_artifact),
+  row = colData(spe.dryspot)$array_row,
+  col = colData(spe.dryspot)$array_col
+)
+
+# Export to CSV
+write.csv(dryspot_df, file=here("processed-data", "outputs_for_paper", "figure_6", "Figure6_C.csv"), row.names = FALSE)
+
 
 # ========== Hangnail artifact ============
 
@@ -332,7 +404,7 @@ spe.hangnail <- findArtifacts(spe.hangnail,
 # ======= Testing PCA clustering vs clustering on single local variance ========
 library(mclust)
 #
-# png(here(plot_dir,"hangnail_localvariance.png"), width=5, height=5, units="in", res=300)
+# pdf(here(plot_dir,"hangnail_localvariance.pdf"), width=5, height=5, units="in", res=300)
 # p1 <- make_escheR(spe.hangnail) |>
 #   add_fill("k18", point_size=2.1) +
 #   ggtitle("Local variance") +
@@ -347,7 +419,7 @@ library(mclust)
 
 
 spe.hangnail$artifact_pc1 <- reducedDim(spe.hangnail, "PCA_artifacts")[,1]
-png(here(plot_dir,"hangnail_localvariance.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"hangnail_localvariance.pdf"), width=5, height=5)
 p1 <- make_escheR(spe.hangnail) |>
   add_fill("artifact_pc1", point_size=2.1) +
   ggtitle("Multiscale variance") +
@@ -359,6 +431,16 @@ p1 <- make_escheR(spe.hangnail) |>
 p1
 dev.off()
 
+# to csv
+hangnail_df <- data.frame(
+  sample_id = colData(spe.hangnail)$sample_id,
+  artifact_pc1 = colData(spe.hangnail)$artifact_pc1,
+  row = colData(spe.hangnail)$array_row,
+  col = colData(spe.hangnail)$array_col
+)
+
+# Export to CSV
+write.csv(hangnail_df, file=here("processed-data", "outputs_for_paper", "figure_6", "Figure6_E.csv"), row.names = FALSE)
 
 
 
@@ -392,7 +474,7 @@ p1 <- make_escheR(spe.hangnail) |>
   scale_fill_manual(values=c("grey", "red"), name="Discard")
 
 
-png(here(plot_dir,"hangnail_mclust_variance.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"hangnail_mclust_variance.pdf"), width=5, height=5)
 p1
 dev.off()
 
@@ -420,7 +502,7 @@ p2 <- make_escheR(spe.hangnail) |>
   scale_fill_manual(values=c("grey", "red"), name="Discard")
 
 
-png(here(plot_dir,"hangnail_dbscan_variance.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"hangnail_dbscan_variance.pdf"), width=5, height=5)
 p2
 dev.off()
 
@@ -448,7 +530,7 @@ p3 <- make_escheR(spe.hangnail) |>
   scale_fill_manual(values=c("grey", "red"), name="Discard")
 
 
-png(here(plot_dir,"hangnail_kmeans_variance.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"hangnail_kmeans_variance.pdf"), width=5, height=5)
 p3
 dev.off()
 
@@ -456,7 +538,7 @@ dev.off()
 
 # ========== various clustering on PCA of local variances ===========
 
-png(here(plot_dir,"hangnail_artifact.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"hangnail_artifact.pdf"), width=5, height=5)
 p1 <- make_escheR(spe.hangnail) |>
   add_fill("artifact", name=dis) +
   ggtitle("Detected artifact") +
@@ -468,10 +550,22 @@ p1 <- make_escheR(spe.hangnail) |>
 p1
 dev.off()
 
+# to csv
+hangnail_df <- data.frame(
+  sample_id = colData(spe.hangnail)$sample_id,
+  artifact = as.character(colData(spe.hangnail)$artifact),
+  row = colData(spe.hangnail)$array_row,
+  col = colData(spe.hangnail)$array_col
+)
+# Export to CSV
+write.csv(hangnail_df, file=here("processed-data", "outputs_for_paper", "figure_6", "Figure6_F.csv"), row.names = FALSE)
+
+
+
 
 x_pca <- reducedDim(spe.hangnail,"PCA_artifacts")[,1:2]
 
-png(here(plot_dir,"hangnail_pca_scatter.png"), width=6, height=5, units="in", res=300)
+pdf(here(plot_dir,"hangnail_pca_scatter.pdf"), width=6, height=5)
 ggplot(x_pca, aes(x=PC1, y=PC2)) +
   geom_point(aes(color=as.factor(spe.hangnail$artifact)), alpha=.5) +
   scale_color_manual(values=c("grey", "red"),
@@ -485,6 +579,21 @@ ggplot(x_pca, aes(x=PC1, y=PC2)) +
   ylab("PC2") +
   xlab("PC1")
 dev.off()
+
+# to csv
+hangnail_pca_df <- data.frame(
+  sample_id = colData(spe.hangnail)$sample_id,
+  PC1 = x_pca[,1],
+  PC2 = x_pca[,2],
+  artifact = as.character(colData(spe.hangnail)$artifact),
+  row = colData(spe.hangnail)$array_row,
+  col = colData(spe.hangnail)$array_col
+)
+
+# Export to CSV
+write.csv(hangnail_pca_df, file=here("processed-data", "outputs_for_paper", "figure_6", "Figure6_G.csv"), row.names = FALSE)
+
+
 
 # GMM
 clust <- Mclust(x_pca, G=2)
@@ -509,7 +618,7 @@ p1 <- make_escheR(spe.hangnail) |>
         legend.text=element_text(size=14)) +
   scale_fill_manual(values=c("grey", "red"), name="Discard")
 
-png(here(plot_dir,"hangnail_mclust_pca.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"hangnail_mclust_pca.pdf"), width=5, height=5)
 p1
 dev.off()
 
@@ -538,7 +647,7 @@ p2 <- make_escheR(spe.hangnail) |>
 
 
 
-png(here(plot_dir,"hangnail_dbscan_pca.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"hangnail_dbscan_pca.pdf"), width=5, height=5)
 p2
 dev.off()
 
@@ -565,7 +674,7 @@ p3 <- make_escheR(spe.hangnail) |>
         legend.text=element_text(size=14)) +
   scale_fill_manual(values=c("grey", "red"), name="Discard")
 
-png(here(plot_dir,"hangnail_kmeans_pca.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"hangnail_kmeans_pca.pdf"), width=5, height=5)
 p3
 dev.off()
 
@@ -578,20 +687,6 @@ library(viridis)
 
 rownames(spe.hangnail) <- rowData(spe.hangnail)$gene_name
 rownames(spe.dryspot) <- rowData(spe.dryspot)$gene_name
-
-marker_genes <- c("AQP4", "HPCAL1", "PVALB", "CCK", "MOBP", "ENC1", "PCP4")
-
-plotExpression(spe.hangnail, features=marker_genes, x="BS_k7", color_by="BS_k7") +
-  scale_color_viridis(discrete = TRUE, direction=-1)
-
-spe.temp <- spe.hangnail
-spe.temp$CCK <- logcounts(spe.temp)[which(rowData(spe.temp)$gene_name=="NRGN"),]
-
-p <- make_escheR(spe.temp) |>
-  add_fill("CCK",point_size=2.5) |>
-  add_ground("BS_k7") +
-  scale_fill_gradient(low = "white", high = "black")
-p
 
 
 known_L6_markers <- c( "NR4A2", "CCK", "KRT17", "SCN3B", "SYTB", "SEMA3E")
@@ -608,12 +703,10 @@ L6_markers <- L6_markers[rownames(L6_markers) %in% known_L6_markers,]
 no.hangnail_ranks <- L6_markers["Top"]
 no.hangnail_ranks
 # CCK            1
-# SCN3B          4
-# KRT17          5
-# SEMA3E        11
+# SCN3B          5
+# KRT17          6
+# SEMA3E        10
 # NR4A2         16
-# NTNG2         67
-# SYNPR         90
 
 #find markers
 markers <- scran::findMarkers(spe.hangnail, groups=spe.hangnail$BS_k7, test.type="wilcox", direction="up")
@@ -627,10 +720,8 @@ hangnail_ranks
 # CCK            1
 # KRT17          9
 # SCN3B         10
-# SEMA3E        53
-# NR4A2         83
-# NTNG2         97
-# SYNPR         99
+# SEMA3E       122
+# NR4A2        178
 
 hangnail_ranks$artifact <- "With"
 no.hangnail_ranks$artifact <- "Without"
@@ -638,9 +729,12 @@ no.hangnail_ranks$artifact <- "Without"
 # ggplot boxplot
 df <- rbind(hangnail_ranks, no.hangnail_ranks)
 
+# to csv
+write.csv(df, file=here("processed-data", "outputs_for_paper", "figure_6", "Figure6_H.csv"), row.names = TRUE)
+
 # boxplot with geom_points of with and without groups
 library(ggpubr)
-png(here(plot_dir,"layer_marker_ranking_boxplot.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"layer_marker_ranking_boxplot.pdf"), width=5, height=5)
 p <- ggplot(df, aes(x=artifact, y=Top, fill=artifact)) +
   geom_boxplot() +
   geom_point(position=position_dodge(width=0.75), size=3) +
@@ -663,7 +757,7 @@ dev.off()
 df <- df[order(df$Top, decreasing=TRUE),]
 
 # make a bar plot instead
-png(here(plot_dir,"layer_marker_ranking_barplot.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"layer_marker_ranking_barplot.pdf"), width=5, height=5)
 p <- ggplot(df, aes(x=Top, y=reorder(rownames(df),Top), fill=reorder(artifact,Top))) +
   geom_bar(stat="identity", position=position_dodge()) +
   geom_text(aes(label=Top), position=position_dodge(width=0.9), hjust=-.15) +
@@ -676,7 +770,7 @@ p <- ggplot(df, aes(x=Top, y=reorder(rownames(df),Top), fill=reorder(artifact,To
   ggtitle("L6 marker genes") +
   ylab("Genes") +
   xlab("Ranking") +
-  xlim(0,90)
+  xlim(0,200)
 p
 dev.off()
 
@@ -716,7 +810,7 @@ dlpfc <- spatialCluster(spe.no.dryspot, q=7, d=d, platform='Visium',
 spe.no.dryspot$BS_k7 <- as.factor(dlpfc$spatial.cluster)
 
 
-png(here(plot_dir,"dryspot_noArtifact_clustering.png"), width=5, height=5, units="in", res=300)
+pdf(here(plot_dir,"dryspot_noArtifact_clustering.pdf"), width=5, height=5)
 p <- make_escheR(spe.no.dryspot) |>
   add_fill("BS_k7") +
   ggtitle("BayesSpace k=7") +
@@ -727,6 +821,17 @@ p <- make_escheR(spe.no.dryspot) |>
   scale_fill_manual(values=colors)
 p
 dev.off()
+
+# to csv
+dryspot_noartifact_df <- data.frame(
+  sample_id = colData(spe.no.dryspot)$sample_id,
+  BS_k7 = as.character(colData(spe.no.dryspot)$BS_k7),
+  row = colData(spe.no.dryspot)$array_row,
+  col = colData(spe.no.dryspot)$array_col
+)
+
+# Export to CSV
+write.csv(dryspot_noartifact_df, file=here("processed-data", "outputs_for_paper", "figure_6", "Figure6_D.csv"), row.names = FALSE)
 
 
 
@@ -753,7 +858,7 @@ spe.hangnail$local_outliers <- as.logical(spe.hangnail$sum_umi_outliers) |
   as.logical(spe.hangnail$expr_chrM_ratio_outliers)
 
 
-png(here(plot_dir,"hangnail_local_outliers.png"), width=5.5, height=5.5, units="in", res=300)
+pdf(here(plot_dir,"hangnail_local_outliers.pdf"), width=5.5, height=5.5)
 SpotSweeper::plotQC(spe.hangnail, metric="sum_umi_log", outliers="local_outliers", point_size=2.1) +
   ggtitle("Local outliers") +
   theme(text=element_text(size=18),
@@ -840,7 +945,7 @@ p4 <- ggplot(df.dryspot, aes(x=artifact, y=var)) +
   xlab("Dryspot") +
   scale_fill_manual(values=c("grey", "red"))
 
-png(here(plot_dir,"dryspot_qc_metrics.png"), width=20, height=6, units="in", res=300)
+pdf(here(plot_dir,"dryspot_qc_metrics.pdf"), width=20, height=6)
 (p1+p2+p3+p4) +
   plot_layout(ncol = 4)
 dev.off()
@@ -910,7 +1015,7 @@ p4 <- ggplot(df.hangnail, aes(x=artifact, y=var)) +
   xlab("Hangnail") +
   scale_fill_manual(values=c("grey", "red"))
 
-png(here(plot_dir,"hangnail_qc_metrics.png"), width=20, height=6, units="in", res=300)
+pdf(here(plot_dir,"hangnail_qc_metrics.pdf"), width=20, height=6)
 (p1+p2+p3+p4) +
   plot_layout(ncol = 4)
 dev.off()
